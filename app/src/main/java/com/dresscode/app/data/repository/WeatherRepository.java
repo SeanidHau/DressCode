@@ -13,6 +13,7 @@ import com.dresscode.app.data.remote.RetrofitClient;
 import com.dresscode.app.data.remote.api.WeatherApi;
 import com.dresscode.app.common.ApiKeys;
 import com.dresscode.app.model.WeatherResponse;
+import com.dresscode.app.utils.WeatherTextMapper;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -73,13 +74,22 @@ public class WeatherRepository {
         });
     }
 
+    public void insertCityIfNotExists(CityEntity city) {
+        executor.execute(() -> {
+            int count = cityDao.countByQueryName(city.queryName);
+            if (count == 0) {
+                long id = cityDao.insertCity(city);
+                city.id = (int) id;
+            }
+        });
+    }
+
     /** 从后端刷新天气并写入 Room */
     public void refreshWeatherForCity(CityEntity city, Runnable onSuccess, Runnable onError) {
-        // 使用 OpenWeather API 按城市名查询
         Call<WeatherResponse> call = weatherApi.getCurrentWeather(
-                city.name,
+                city.queryName,
                 ApiKeys.OPEN_WEATHER_API_KEY,
-                "metric"   // 使用摄氏度
+                "metric"
         );
 
         call.enqueue(new Callback<WeatherResponse>() {
@@ -88,16 +98,16 @@ public class WeatherRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     WeatherResponse body = response.body();
 
-                    String name = body.cityName != null ? body.cityName : city.name;
+                    String name = body.cityName != null ? body.cityName : city.queryName;
                     double temp = (body.main != null) ? body.main.temp : 0.0;
                     String desc = null;
                     if (body.weather != null && !body.weather.isEmpty()) {
-                        desc = body.weather.get(0).description;
+                        desc = WeatherTextMapper.toChinese(body.weather.get(0).description);
                     }
 
                     WeatherCacheEntity entity = new WeatherCacheEntity(
                             city.id,
-                            name,
+                            city.displayName,
                             temp,
                             desc,
                             System.currentTimeMillis()

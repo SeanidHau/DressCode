@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,8 @@ import com.dresscode.app.R;
 import com.dresscode.app.data.local.entity.CityEntity;
 import com.dresscode.app.data.local.entity.WeatherCacheEntity;
 import com.dresscode.app.viewmodel.WeatherViewModel;
+import com.dresscode.app.ui.weather.CitySelectActivity;
+import com.dresscode.app.utils.WeatherTextMapper;
 
 public class WeatherFragment extends Fragment {
 
@@ -64,16 +67,14 @@ public class WeatherFragment extends Fragment {
                 new ViewModelProvider.AndroidViewModelFactory(requireActivity().getApplication()))
                 .get(WeatherViewModel.class);
 
-        // 监听当前城市
         viewModel.getCurrentCity().observe(getViewLifecycleOwner(), city -> {
             if (city != null) {
-                tvCityName.setText(city.name);
+                tvCityName.setText(city.displayName);  // 中文
                 viewModel.observeWeatherForCity(city.id);
                 observeWeather();
-                viewModel.refreshWeather(city); // 进入页面自动刷新一次
+                viewModel.refreshWeather(city);
             } else {
-                // 没有城市就先给一个默认的
-                CityEntity defaultCity = new CityEntity("Hangzhou", 0, 0, true);
+                CityEntity defaultCity = new CityEntity("杭州", "Hangzhou", 0, 0, true);
                 viewModel.setCurrentCity(defaultCity);
             }
         });
@@ -96,10 +97,8 @@ public class WeatherFragment extends Fragment {
         // 定位按钮：先申请权限，定位逻辑可以后面再补
         btnLocation.setOnClickListener(v -> checkLocationPermission());
 
-        // 切换城市按钮：这里先简单示例，后面可以做城市选择 Activity
         btnChangeCity.setOnClickListener(v -> {
-            CityEntity newCity = new CityEntity("Shanghai", 0, 0, true);
-            viewModel.setCurrentCity(newCity);
+            startActivity(new Intent(requireContext(), CitySelectActivity.class));
         });
     }
 
@@ -114,7 +113,7 @@ public class WeatherFragment extends Fragment {
 
     private void bindWeather(WeatherCacheEntity weather) {
         tvTemperature.setText(String.format("%.1f°C", weather.temperature));
-        tvCondition.setText(weather.conditionText != null ? weather.conditionText : "—");
+        tvCondition.setText(weather.conditionText != null ? WeatherTextMapper.toChinese(weather.conditionText) : "—");
     }
 
     /** 简单定位权限逻辑，后续你可以接入 FusedLocationProvider */

@@ -16,7 +16,7 @@ import com.dresscode.app.data.local.entity.WeatherCacheEntity;
                 CityEntity.class,
                 WeatherCacheEntity.class
         },
-        version = 1,
+        version = 2,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {

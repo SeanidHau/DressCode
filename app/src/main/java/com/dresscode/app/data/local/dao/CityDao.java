@@ -20,7 +20,7 @@ public interface CityDao {
     @Update
     void updateCity(CityEntity city);
 
-    @Query("SELECT * FROM city ORDER BY isCurrent DESC, name ASC")
+    @Query("SELECT * FROM city ORDER BY isCurrent DESC, displayName ASC")
     LiveData<List<CityEntity>> getAllCities();
 
     @Query("SELECT * FROM city WHERE isCurrent = 1 LIMIT 1")
@@ -31,4 +31,7 @@ public interface CityDao {
 
     @Query("UPDATE city SET isCurrent = 1 WHERE id = :cityId")
     void setCurrentCity(int cityId);
+
+    @Query("SELECT COUNT(*) FROM city WHERE queryName = :queryName")
+    int countByQueryName(String queryName);
 }

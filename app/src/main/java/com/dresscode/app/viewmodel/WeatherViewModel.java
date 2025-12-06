@@ -56,6 +56,10 @@ public class WeatherViewModel extends AndroidViewModel {
         currentWeather = repository.getWeatherForCity(cityId);
     }
 
+    public void insertCityIfNotExists(CityEntity city) {
+        repository.insertCityIfNotExists(city);
+    }
+
     /** 刷新天气（远端 → Room） */
     public void refreshWeather(CityEntity city) {
         loading.setValue(true);
