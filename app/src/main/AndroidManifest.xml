@@ -26,6 +26,8 @@
         <activity
             android:name=".ui.weather.CitySelectActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.feed.OutfitDetailActivity" />
     </application>
 
 </manifest>
