@@ -6,6 +6,7 @@ import java.util.Map;
 public class WeatherTextMapper {
 
     private static final Map<String, String> map = new HashMap<>();
+    private static final Map<String, String> cityMap = new HashMap<>();
 
     static {
         // ------ 晴 / 云 ------
@@ -61,6 +62,26 @@ public class WeatherTextMapper {
         map.put("tornado", "龙卷风");
     }
 
+    static {
+        cityMap.put("Beijing", "北京");
+        cityMap.put("Shanghai", "上海");
+        cityMap.put("Hangzhou", "杭州");
+        cityMap.put("Guangzhou", "广州");
+        cityMap.put("Shenzhen", "深圳");
+        cityMap.put("Chengdu", "成都");
+        cityMap.put("Chongqing", "重庆");
+        cityMap.put("Wuhan", "武汉");
+        cityMap.put("Xi'an", "西安");
+        cityMap.put("Nanjing", "南京");
+
+        cityMap.put("New York", "纽约");
+        cityMap.put("London", "伦敦");
+        cityMap.put("Paris", "巴黎");
+        cityMap.put("Tokyo", "东京");
+        cityMap.put("Seoul", "首尔");
+        cityMap.put("Singapore", "新加坡");
+    }
+
     /** 映射英文 → 中文（没有匹配则返回英文或“未知”） */
     public static String toChinese(String desc) {
         if (desc == null) return "未知天气";
@@ -72,5 +93,13 @@ public class WeatherTextMapper {
         }
 
         return desc; // fallback：直接显示英文，不会报错
+    }
+
+    public static String cityToChinese(String englishCity) {
+        if (englishCity == null) return "未知城市";
+        if (cityMap.containsKey(englishCity)) {
+            return cityMap.get(englishCity);
+        }
+        return englishCity; // fallback
     }
 }

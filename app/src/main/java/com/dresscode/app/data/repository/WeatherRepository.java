@@ -128,4 +128,53 @@ public class WeatherRepository {
             }
         });
     }
+
+    public void updateCityByLocation(double lat, double lon,
+                                     Runnable onSuccess, Runnable onError) {
+
+        Call<WeatherResponse> call = weatherApi.getCurrentWeatherByCoord(
+                lat, lon,
+                ApiKeys.OPEN_WEATHER_API_KEY,
+                "metric"
+        );
+
+        call.enqueue(new Callback<WeatherResponse>() {
+            @Override
+            public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    WeatherResponse body = response.body();
+
+                    // OpenWeather 返回的城市名是英文，例如 Shanghai、London
+                    String queryName = body.cityName;
+                    String displayName = WeatherTextMapper.cityToChinese(body.cityName);
+
+                    CityEntity city = new CityEntity(
+                            displayName,
+                            queryName,
+                            lat,
+                            lon,
+                            true
+                    );
+
+                    executor.execute(() -> {
+                        long id = cityDao.insertCity(city);
+                        city.id = (int) id;
+
+                        cityDao.clearCurrentFlags();
+                        cityDao.setCurrentCity(city.id);
+
+                        if (onSuccess != null) onSuccess.run();
+                    });
+                } else {
+                    if (onError != null) onError.run();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeatherResponse> call, Throwable t) {
+                if (onError != null) onError.run();
+            }
+        });
+    }
+
 }

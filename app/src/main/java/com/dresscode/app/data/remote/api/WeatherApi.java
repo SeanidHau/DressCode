@@ -15,4 +15,12 @@ public interface WeatherApi {
             @Query("appid") String apiKey,
             @Query("units") String units   // 传 "metric"
     );
+
+    @GET("weather")
+    Call<WeatherResponse> getCurrentWeatherByCoord(
+            @Query("lat") double lat,
+            @Query("lon") double lon,
+            @Query("appid") String apiKey,
+            @Query("units") String units
+    );
 }

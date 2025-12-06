@@ -74,6 +74,14 @@ public class WeatherViewModel extends AndroidViewModel {
         );
     }
 
+    public void updateCityByLocation(double lat, double lon) {
+        repository.updateCityByLocation(
+                lat, lon,
+                () -> loading.postValue(false),
+                () -> error.postValue("定位获取天气失败")
+        );
+    }
+
     public void setCurrentCity(CityEntity city) {
         repository.setCurrentCity(city);
     }
