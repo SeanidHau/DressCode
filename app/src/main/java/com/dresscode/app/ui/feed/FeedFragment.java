@@ -1,17 +1,24 @@
 package com.dresscode.app.ui.feed;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -20,6 +27,7 @@ import com.dresscode.app.data.local.dao.FavoriteDao;
 import com.dresscode.app.data.local.dao.OutfitDao;
 import com.dresscode.app.data.local.dao.SearchHistoryDao;
 import com.dresscode.app.data.local.AppDatabase;
+import com.dresscode.app.data.local.entity.SearchHistoryEntity;
 import com.dresscode.app.data.remote.api.OutfitApi;
 import com.dresscode.app.data.repository.OutfitRepository;
 import com.dresscode.app.model.FilterOption;
@@ -35,13 +43,16 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class FeedFragment extends Fragment {
-
     private FeedViewModel viewModel;
     private FeedAdapter adapter;
-
+    private SearchHistoryAdapter historyAdapter;
     private EditText searchBox;
-
+    private RecyclerView rvHistory;
     private FilterOption currentFilter = new FilterOption();
+    private List<SearchHistoryEntity> historyCache = new ArrayList<>();
+    private ImageButton btnBackSearch;
+    private Button btnClearSearch;
+    private boolean isInSearchMode = false;
 
     public FeedFragment() {
         // Required empty public constructor
@@ -56,6 +67,10 @@ public class FeedFragment extends Fragment {
 
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
         searchBox = v.findViewById(R.id.searchBox);
+        rvHistory = v.findViewById(R.id.rvSearchHistory);
+        btnBackSearch = v.findViewById(R.id.btnBackSearch);
+        btnClearSearch = v.findViewById(R.id.btnClearSearch);
+        Button btnFilter = v.findViewById(R.id.btnFilter);
 
         recyclerView.setLayoutManager(
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -63,6 +78,29 @@ public class FeedFragment extends Fragment {
 
         adapter = new FeedAdapter(outfitId -> viewModel.toggleFavorite(outfitId));
         recyclerView.setAdapter(adapter);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView rv, int newState) {
+                super.onScrollStateChanged(rv, newState);
+                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                    hideHistory();
+                    searchBox.clearFocus();
+                    hideKeyboard();
+                }
+            }
+        });
+
+        rvHistory.setLayoutManager(new LinearLayoutManager(requireContext()));
+        historyAdapter = new SearchHistoryAdapter(keyword -> {
+            enterSearchMode();
+            searchBox.setText(keyword);
+            searchBox.setSelection(keyword.length());
+            performSearch(keyword);
+            hideHistory();
+        });
+
+        rvHistory.setAdapter(historyAdapter);
 
         v.findViewById(R.id.btnFilter).setOnClickListener(view -> {
             FeedFilterDialog.show(
@@ -73,6 +111,17 @@ public class FeedFragment extends Fragment {
                         viewModel.updateFilter(option); // 触发 LiveData 刷新
                     }
             );
+        });
+
+        btnBackSearch.setOnClickListener(v1 -> exitSearchMode());
+
+        btnClearSearch.setOnClickListener(view12 -> {
+            searchBox.setText("");
+            if (historyAdapter.getItemCount() > 0 && searchBox.hasFocus()) {
+                showHistory();
+            } else {
+                hideHistory();
+            }
         });
 
         initViewModel();
@@ -124,21 +173,43 @@ public class FeedFragment extends Fragment {
 
     private void setupSearch() {
         searchBox.setOnEditorActionListener((v, actionId, event) -> {
-            boolean isActionSearch = actionId == EditorInfo.IME_ACTION_SEARCH;
-            boolean isEnterKey = event != null
-                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-                    && event.getAction() == KeyEvent.ACTION_DOWN;
-
-            if (isActionSearch || isEnterKey) {
-                String keyword = searchBox.getText().toString().trim();
-                if (!keyword.isEmpty()) {
-                    viewModel.search(keyword).observe(getViewLifecycleOwner(), outfits -> {
-                        adapter.submitList(outfits);
-                    });
-                }
-                return true;
+            String keyword = searchBox.getText().toString().trim();
+            if (!keyword.isEmpty()) {
+                enterSearchMode();
+                performSearch(keyword);
+                hideHistory();
             }
-            return false;
+            return true;
+        });
+
+
+        searchBox.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                enterSearchMode();
+                if (searchBox.getText().length() == 0
+                        && historyAdapter.getItemCount() > 0) {
+                    showHistory();
+                }
+            } else {
+                hideHistory();
+            }
+        });
+
+        // 文本变化：有内容就隐藏历史；清空内容就显示历史
+        searchBox.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0 && searchBox.hasFocus()
+                        && historyAdapter.getItemCount() > 0) {
+                    showHistory();
+                    btnClearSearch.setVisibility(View.GONE);
+                } else if (s.length() > 0) {
+                    hideHistory();
+                    btnClearSearch.setVisibility(View.VISIBLE);
+                }
+            }
         });
     }
 
@@ -157,5 +228,70 @@ public class FeedFragment extends Fragment {
             }
             adapter.setFavoriteIds(ids);
         });
+
+        viewModel.searchHistoryList.observe(getViewLifecycleOwner(), history -> {
+            historyAdapter.submitList(history);
+            // 如果当前输入框有焦点 & 没文字，就显示
+            if (searchBox.hasFocus() && (searchBox.getText().length() == 0)
+                    && history != null && !history.isEmpty()) {
+                showHistory();
+            } else {
+                hideHistory();
+            }
+        });
+
+    }
+
+    private void performSearch(String keyword) {
+        viewModel.search(keyword).observe(getViewLifecycleOwner(), result -> {
+            adapter.submitList(result);
+        });
+
+        btnClearSearch.setVisibility(View.VISIBLE);
+
+        hideHistory();
+        hideKeyboard();
+    }
+
+    private void showHistory() {
+        rvHistory.setVisibility(View.VISIBLE);
+    }
+
+    private void hideHistory() {
+        rvHistory.setVisibility(View.GONE);
+    }
+
+    private void hideKeyboard() {
+        View view = requireActivity().getCurrentFocus();
+        if (view == null) {
+            view = getView();
+        }
+        if (view != null) {
+            InputMethodManager imm =
+                    (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+    }
+
+    private void enterSearchMode() {
+        isInSearchMode = true;
+        btnBackSearch.setVisibility(View.VISIBLE);   // 显示返回
+    }
+
+    private void exitSearchMode() {
+        isInSearchMode = false;
+
+        searchBox.setText("");        // 清空搜索
+        searchBox.clearFocus();       // 取消焦点
+        btnBackSearch.setVisibility(View.GONE);  // 隐藏返回
+        btnClearSearch.setVisibility(View.GONE); // 隐藏清除
+
+        hideHistory();                // 隐藏历史列表
+        hideKeyboard();               // 收键盘
+
+        // 回到主列表（保留当前筛选条件）
+        viewModel.updateFilter(currentFilter);
     }
 }

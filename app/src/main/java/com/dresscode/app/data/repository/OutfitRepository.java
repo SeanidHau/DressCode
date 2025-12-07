@@ -109,4 +109,12 @@ public class OutfitRepository {
     public LiveData<List<FavoriteEntity>> getAllFavorites() {
         return favoriteDao.getAll();
     }
+
+    public void clearSearchHistory() {
+        executor.execute(() -> searchHistoryDao.clearAll());
+    }
+
+    public LiveData<List<SearchHistoryEntity>> getSearchHistory() {
+        return searchHistoryDao.getRecent();
+    }
 }

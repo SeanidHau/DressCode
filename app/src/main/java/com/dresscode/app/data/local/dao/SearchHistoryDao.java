@@ -18,4 +18,8 @@ public interface SearchHistoryDao {
 
     @Query("SELECT * FROM search_history ORDER BY time DESC LIMIT 10")
     LiveData<List<SearchHistoryEntity>> getRecent();
+
+    @Query("DELETE FROM search_history")
+    void clearAll();
+
 }
