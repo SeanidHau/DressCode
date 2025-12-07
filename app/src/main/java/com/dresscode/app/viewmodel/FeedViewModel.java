@@ -6,6 +6,7 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.dresscode.app.data.local.entity.OutfitEntity;
+import com.dresscode.app.data.local.entity.FavoriteEntity;
 import com.dresscode.app.data.repository.OutfitRepository;
 import com.dresscode.app.model.FilterOption;
 
@@ -17,6 +18,7 @@ public class FeedViewModel extends ViewModel {
 
     private final MutableLiveData<FilterOption> filterLiveData = new MutableLiveData<>();
     public final LiveData<List<OutfitEntity>> outfitList;
+    public final LiveData<List<FavoriteEntity>> favoriteList;
 
     public FeedViewModel(OutfitRepository repository) {
         this.repository = repository;
@@ -26,6 +28,8 @@ public class FeedViewModel extends ViewModel {
         filterLiveData.setValue(defaultOption);
 
         outfitList = Transformations.switchMap(filterLiveData, repository::getFilteredOutfits);
+
+        favoriteList = repository.getAllFavorites();
     }
 
     public void updateFilter(FilterOption option) {

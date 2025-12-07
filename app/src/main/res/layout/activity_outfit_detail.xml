@@ -1,32 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 穿搭大图 -->
+    <!-- 大图 -->
     <ImageView
         android:id="@+id/outfitImage"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:scaleType="centerCrop"
-        android:contentDescription="outfit detail image" />
+        android:contentDescription="outfit detail image"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintDimensionRatio="4:5"
+        />
 
-    <!-- 底部操作区 -->
+    <!-- 顶部返回按钮 -->
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:contentDescription="back"
+        app:layout_constraintTop_toTopOf="@id/outfitImage"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- 顶部收藏按钮（星星） -->
+    <ImageButton
+        android:id="@+id/btnFavorite"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/btn_star_big_off"
+        android:contentDescription="favorite"
+        app:layout_constraintTop_toTopOf="@id/outfitImage"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 底部信息卡片 -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:id="@+id/infoPanel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:orientation="vertical"
+        android:background="#CCFFFFFF"
+        android:padding="16dp"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/outfitImage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
 
-        <ImageButton
-            android:id="@+id/btnFavorite"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/btn_star" />
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="今日推荐穿搭"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#222222" />
 
-        <!-- 你可以在这里再加一些 TextView，比如风格 / 季节描述 -->
+        <TextView
+            android:id="@+id/tvTags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="风格 · 季节 · 场景"
+            android:textSize="14sp"
+            android:textColor="#666666" />
+
+        <TextView
+            android:id="@+id/tvDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="这里可以展示这套穿搭的简单描述，例如：适合通勤、上学或周末出行。"
+            android:textSize="14sp"
+            android:textColor="#444444" />
+
     </LinearLayout>
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

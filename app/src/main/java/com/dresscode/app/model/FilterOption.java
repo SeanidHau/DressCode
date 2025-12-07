@@ -20,4 +20,14 @@ public class FilterOption {
         this.scene = scene;
         this.weather = weather;
     }
+
+    public FilterOption copy() {
+        FilterOption f = new FilterOption();
+        f.gender = this.gender;
+        f.style = this.style;
+        f.season = this.season;
+        f.scene = this.scene;
+        f.weather = this.weather;
+        return f;
+    }
 }

@@ -34,6 +34,7 @@ public class OutfitRepository {
         this.favoriteDao = favoriteDao;
         this.searchHistoryDao = searchHistoryDao;
         this.outfitApi = outfitApi;
+
     }
 
     // 从本地（Room）获取过滤后的列表
@@ -103,5 +104,9 @@ public class OutfitRepository {
     private String emptyToNull(String s) {
         if (s == null || s.trim().isEmpty()) return null;
         return s;
+    }
+
+    public LiveData<List<FavoriteEntity>> getAllFavorites() {
+        return favoriteDao.getAll();
     }
 }

@@ -26,6 +26,10 @@ import com.dresscode.app.model.FilterOption;
 import com.dresscode.app.viewmodel.FeedViewModel;
 import com.dresscode.app.viewmodel.FeedViewModelFactory;
 import com.dresscode.app.utils.FakeOutfitData;
+import com.dresscode.app.data.local.entity.FavoriteEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -36,6 +40,8 @@ public class FeedFragment extends Fragment {
     private FeedAdapter adapter;
 
     private EditText searchBox;
+
+    private FilterOption currentFilter = new FilterOption();
 
     public FeedFragment() {
         // Required empty public constructor
@@ -59,11 +65,14 @@ public class FeedFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         v.findViewById(R.id.btnFilter).setOnClickListener(view -> {
-            // 这里你可以弹出筛选弹窗，设置 FilterOption
-            // 先写一个最简单的示例：假装选择了“夏季”
-            FilterOption opt = new FilterOption();
-            opt.season = "夏";
-            viewModel.updateFilter(opt);
+            FeedFilterDialog.show(
+                    requireContext(),
+                    currentFilter,
+                    option -> {
+                        currentFilter = option;
+                        viewModel.updateFilter(option); // 触发 LiveData 刷新
+                    }
+            );
         });
 
         initViewModel();
@@ -72,6 +81,8 @@ public class FeedFragment extends Fragment {
         viewModel.outfitList.observe(getViewLifecycleOwner(), outfits -> {
             adapter.submitList(outfits);
         });
+
+        observeData();
 
         setupSearch();
 
@@ -101,10 +112,15 @@ public class FeedFragment extends Fragment {
         FeedViewModelFactory factory = new FeedViewModelFactory(repository);
         viewModel = new ViewModelProvider(this, factory).get(FeedViewModel.class);
 
-        // 如果你之前在这里调用过 refreshFromRemote，可以先注释掉：
-        // viewModel.refreshFromRemote();
+        viewModel.favoriteList.observe(getViewLifecycleOwner(), favorites -> {
+            if (favorites == null) return;
+            List<Integer> ids = new ArrayList<>();
+            for (FavoriteEntity f : favorites) {
+                ids.add(f.outfitId);
+            }
+            adapter.setFavoriteIds(ids);
+        });
     }
-
 
     private void setupSearch() {
         searchBox.setOnEditorActionListener((v, actionId, event) -> {
@@ -123,6 +139,23 @@ public class FeedFragment extends Fragment {
                 return true;
             }
             return false;
+        });
+    }
+
+    private void observeData() {
+        // 列表数据
+        viewModel.outfitList.observe(getViewLifecycleOwner(), outfits -> {
+            adapter.submitList(outfits);
+        });
+
+        // 收藏状态（如果你之前已经写了 favoriteList 观察，这里保留）
+        viewModel.favoriteList.observe(getViewLifecycleOwner(), favorites -> {
+            if (favorites == null) return;
+            List<Integer> ids = new ArrayList<>();
+            for (FavoriteEntity f : favorites) {
+                ids.add(f.outfitId);
+            }
+            adapter.setFavoriteIds(ids);
         });
     }
 }

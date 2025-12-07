@@ -1,5 +1,6 @@
 package com.dresscode.app.ui.feed;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -17,7 +18,19 @@ import com.bumptech.glide.Glide;
 import com.dresscode.app.R;
 import com.dresscode.app.data.local.entity.OutfitEntity;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 public class FeedAdapter extends ListAdapter<OutfitEntity, FeedAdapter.ViewHolder> {
+
+    private final Set<Integer> favoriteIds = new HashSet<>();
+
+    public void setFavoriteIds(Collection<Integer> ids) {
+        favoriteIds.clear();
+        favoriteIds.addAll(ids);
+        notifyDataSetChanged();
+    }
 
     public interface OnFavoriteClickListener {
         void onFavoriteClick(int outfitId);
@@ -60,7 +73,25 @@ public class FeedAdapter extends ListAdapter<OutfitEntity, FeedAdapter.ViewHolde
                 .load(item.imageUrl)
                 .into(holder.imageView);
 
+        // ✅ 根据是否在 favoriteIds 里，决定星星亮不亮
+        boolean isFav = favoriteIds.contains(item.id);
+        holder.favoriteBtn.setImageResource(
+                isFav
+                        ? android.R.drawable.btn_star_big_on
+                        : android.R.drawable.btn_star_big_off
+        );
+
+        // 点星星：UI 先本地切一下，然后再通知 ViewModel 改数据库
         holder.favoriteBtn.setOnClickListener(v -> {
+            boolean newState = !favoriteIds.contains(item.id);
+            if (newState) {
+                favoriteIds.add(item.id);
+            } else {
+                favoriteIds.remove(item.id);
+            }
+            // 更新当前 item 的图标
+            notifyItemChanged(holder.getAdapterPosition());
+
             if (favoriteClickListener != null) {
                 favoriteClickListener.onFavoriteClick(item.id);
             }
@@ -69,6 +100,12 @@ public class FeedAdapter extends ListAdapter<OutfitEntity, FeedAdapter.ViewHolde
         holder.itemView.setOnClickListener(v -> {
             Intent intent = OutfitDetailActivity.newIntent(ctx, item.id);
             ctx.startActivity(intent);
+            if (ctx instanceof Activity) {
+                ((Activity) ctx).overridePendingTransition(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                );
+            }
         });
     }
 
