@@ -1,13 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tvSettings"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Settings - 设置"
-        android:textSize="22sp" />
-</FrameLayout>
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 标题：个人设置 -->
+        <TextView
+            android:id="@+id/tvSettingsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="个人设置"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingBottom="16dp" />
+
+        <!-- 昵称设置 -->
+        <TextView
+            android:id="@+id/tvNicknameLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="昵称"
+            android:textSize="16sp"
+            android:paddingBottom="4dp" />
+
+        <EditText
+            android:id="@+id/etNickname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入你的昵称"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+        <!-- 性别设置 -->
+        <TextView
+            android:id="@+id/tvGenderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="性别设置"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/rgGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbGenderUnknown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="未设置" />
+
+            <RadioButton
+                android:id="@+id/rbGenderMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="男"
+                android:layout_marginStart="16dp" />
+
+            <RadioButton
+                android:id="@+id/rbGenderFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="女"
+                android:layout_marginStart="16dp" />
+        </RadioGroup>
+
+        <!-- 默认筛选设置 -->
+        <TextView
+            android:id="@+id/tvDefaultFilterTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="默认筛选展示"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp" />
+
+        <!-- 默认风格 -->
+        <TextView
+            android:id="@+id/tvDefaultStyleLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="默认风格" />
+
+        <Spinner
+            android:id="@+id/spinnerDefaultStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" />
+
+        <!-- 默认季节 -->
+        <TextView
+            android:id="@+id/tvDefaultSeasonLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="默认季节"
+            android:layout_marginTop="12dp" />
+
+        <Spinner
+            android:id="@+id/spinnerDefaultSeason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" />
+
+        <!-- 主题 / 深色模式 / 清除缓存 -->
+        <TextView
+            android:id="@+id/tvAppearanceTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="外观与缓存"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="24dp"
+            android:paddingBottom="8dp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchDarkMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="深色模式" />
+
+        <Button
+            android:id="@+id/btnClearCache"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="清除缓存"
+            android:layout_marginTop="8dp" />
+
+        <!-- 保存按钮 -->
+        <Button
+            android:id="@+id/btnSaveSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="保存设置"
+            android:layout_marginTop="24dp" />
+
+    </LinearLayout>
+</ScrollView>

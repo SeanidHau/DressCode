@@ -11,12 +11,14 @@ import com.dresscode.app.data.local.dao.WeatherDao;
 import com.dresscode.app.data.local.dao.OutfitDao;
 import com.dresscode.app.data.local.dao.FavoriteDao;
 import com.dresscode.app.data.local.dao.SearchHistoryDao;
+import com.dresscode.app.data.local.dao.UserProfileDao;
 
 import com.dresscode.app.data.local.entity.CityEntity;
 import com.dresscode.app.data.local.entity.WeatherCacheEntity;
 import com.dresscode.app.data.local.entity.OutfitEntity;
 import com.dresscode.app.data.local.entity.FavoriteEntity;
 import com.dresscode.app.data.local.entity.SearchHistoryEntity;
+import com.dresscode.app.data.local.entity.UserProfileEntity;
 
 @Database(
         entities = {
@@ -27,9 +29,12 @@ import com.dresscode.app.data.local.entity.SearchHistoryEntity;
                 // 穿搭模块
                 OutfitEntity.class,
                 FavoriteEntity.class,
-                SearchHistoryEntity.class
+                SearchHistoryEntity.class,
+
+                // 设置模块
+                UserProfileEntity.class
         },
-        version = 3,   // ⚠️版本号必须更新
+        version = 4,   // ⚠️版本号必须更新
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -44,6 +49,9 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract OutfitDao outfitDao();
     public abstract FavoriteDao favoriteDao();
     public abstract SearchHistoryDao searchHistoryDao();
+
+    // 设置模块 Dao
+    public abstract UserProfileDao userProfileDao();
 
     public static AppDatabase getInstance(Context context) {
         if (INSTANCE == null) {

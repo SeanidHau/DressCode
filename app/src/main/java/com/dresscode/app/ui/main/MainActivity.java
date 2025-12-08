@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.dresscode.app.R;
@@ -11,6 +12,7 @@ import com.dresscode.app.ui.dressing.DressingFragment;
 import com.dresscode.app.ui.feed.FeedFragment;
 import com.dresscode.app.ui.settings.SettingsFragment;
 import com.dresscode.app.ui.weather.WeatherFragment;
+import com.dresscode.app.utils.PreferenceUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,6 +21,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        boolean darkMode = PreferenceUtils.getBoolean(
+                this,
+                PreferenceUtils.KEY_DARK_MODE,
+                false
+        );
+
+        AppCompatDelegate.setDefaultNightMode(
+                darkMode
+                        ? AppCompatDelegate.MODE_NIGHT_YES
+                        : AppCompatDelegate.MODE_NIGHT_NO
+        );
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

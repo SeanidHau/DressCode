@@ -35,6 +35,7 @@ import com.dresscode.app.viewmodel.FeedViewModel;
 import com.dresscode.app.viewmodel.FeedViewModelFactory;
 import com.dresscode.app.utils.FakeOutfitData;
 import com.dresscode.app.data.local.entity.FavoriteEntity;
+import com.dresscode.app.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,6 +126,8 @@ public class FeedFragment extends Fragment {
         });
 
         initViewModel();
+
+        applyDefaultFilterFromSettings();
 
         // 观察数据
         viewModel.outfitList.observe(getViewLifecycleOwner(), outfits -> {
@@ -294,4 +297,39 @@ public class FeedFragment extends Fragment {
         // 回到主列表（保留当前筛选条件）
         viewModel.updateFilter(currentFilter);
     }
+
+    /**
+     * 从设置页读取用户保存的性别 / 风格 / 季节，并作为 Feed 的默认筛选选项
+     */
+    private void applyDefaultFilterFromSettings() {
+        Context ctx = requireContext();
+
+        int gender = PreferenceUtils.getInt(ctx, PreferenceUtils.KEY_GENDER, 0);
+        String style = PreferenceUtils.getString(ctx, PreferenceUtils.KEY_DEFAULT_STYLE, "不过滤");
+        String season = PreferenceUtils.getString(ctx, PreferenceUtils.KEY_DEFAULT_SEASON, "不过滤");
+
+        FilterOption option = new FilterOption();
+
+        option.gender = gender;
+
+        if ("不过滤".equals(style)) {
+            option.style = null;
+        } else {
+            option.style = style;
+        }
+
+        if ("不过滤".equals(season)) {
+            option.season = null;
+        } else {
+            option.season = season;
+        }
+
+        option.scene = null;
+        option.weather = null;
+
+        currentFilter = option;
+
+        viewModel.updateFilter(option);
+    }
+
 }

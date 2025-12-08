@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 默认风格选项 -->
+    <string-array name="style_options">
+        <item>不过滤</item>
+        <item>休闲</item>
+        <item>通勤</item>
+        <item>运动</item>
+        <item>约会</item>
+        <item>度假</item>
+        <item>街头</item>
+        <item>复古</item>
+    </string-array>
+
+    <!-- 默认季节选项 -->
+    <string-array name="season_options">
+        <item>不过滤</item>
+        <item>春</item>
+        <item>夏</item>
+        <item>秋</item>
+        <item>冬</item>
+    </string-array>
+
+</resources>
