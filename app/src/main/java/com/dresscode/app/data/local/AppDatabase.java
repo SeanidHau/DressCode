@@ -31,6 +31,9 @@ import com.dresscode.app.data.local.entity.UserProfileEntity;
                 FavoriteEntity.class,
                 SearchHistoryEntity.class,
 
+                // 智能换装模块
+
+
                 // 设置模块
                 UserProfileEntity.class
         },

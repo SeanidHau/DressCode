@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.dresscode.app.data.local.entity.FavoriteEntity;
+import com.dresscode.app.data.local.entity.OutfitEntity;
 
 import java.util.List;
 
@@ -26,4 +27,8 @@ public interface FavoriteDao {
 
     @Query("SELECT * FROM favorite")
     LiveData<List<FavoriteEntity>> getAll();
+
+    @Query("SELECT o.* FROM outfits o " +
+            "INNER JOIN favorite f ON o.id = f.outfitId")
+    List<OutfitEntity> getFavoriteOutfitsWithDetail();
 }
