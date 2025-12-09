@@ -1,6 +1,7 @@
 package com.dresscode.app.ui.settings;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.dresscode.app.data.local.AppDatabase;
 import com.dresscode.app.data.local.dao.UserProfileDao;
 import com.dresscode.app.data.local.entity.UserProfileEntity;
 import com.dresscode.app.model.UserSettings;
+import com.dresscode.app.ui.login.LoginActivity;
 import com.dresscode.app.utils.PreferenceUtils;
 import com.dresscode.app.viewmodel.SettingsViewModel;
 
@@ -47,6 +49,7 @@ public class SettingsFragment extends Fragment {
 
     private SwitchCompat switchDarkMode;
     private Button btnClearCache;
+    private Button btnLogout;
 
     private ArrayAdapter<CharSequence> styleAdapter;
     private ArrayAdapter<CharSequence> seasonAdapter;
@@ -78,6 +81,9 @@ public class SettingsFragment extends Fragment {
 
         // 保存按钮
         btnSaveSettings = v.findViewById(R.id.btnSaveSettings);
+
+        // 退出登录按钮
+        btnLogout = v.findViewById(R.id.btnLogout);
 
         // Spinner 适配器
         styleAdapter = ArrayAdapter.createFromResource(
@@ -182,6 +188,20 @@ public class SettingsFragment extends Fragment {
         btnSaveSettings.setOnClickListener(v -> {
             saveAllSettings();
             Toast.makeText(requireContext(), "设置已保存", Toast.LENGTH_SHORT).show();
+        });
+
+        btnLogout.setOnClickListener(v -> {
+            // 1. 调用 ViewModel 退出登录（清除本地登录状态）
+            viewModel.logout(requireContext());
+
+            // 2. 跳转回登录页面
+            Intent intent = new Intent(requireContext(), LoginActivity.class);
+            // 清除返回栈，防止按返回键又回到已登录页面
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
+            // 3. 结束当前 Activity
+            requireActivity().finish();
         });
     }
 

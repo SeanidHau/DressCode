@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.dresscode.app.model.UserSettings;
 import com.dresscode.app.utils.PreferenceUtils;
+import com.dresscode.app.data.repository.AuthRepository;
 
 public class SettingsViewModel extends ViewModel {
 
@@ -53,5 +54,10 @@ public class SettingsViewModel extends ViewModel {
     public void saveSettings(Context context) {
         UserSettings current = userSettingsLiveData.getValue();
         PreferenceUtils.saveUserSettings(context, current);
+    }
+
+    public void logout(Context context) {
+        AuthRepository authRepository = AuthRepository.getInstance(context.getApplicationContext());
+        authRepository.logout();
     }
 }

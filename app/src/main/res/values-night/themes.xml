@@ -1,7 +1,24 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<resources>
+
+    <style name="Theme.DressCode" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <!-- 仍然引用同名颜色，但会自动用 values-night/colors.xml 中的深色值 -->
+        <item name="colorPrimary">@color/dc_primary</item>
+        <item name="colorOnPrimary">@color/dc_on_primary</item>
+
+        <item name="colorSecondary">@color/dc_secondary</item>
+        <item name="colorOnSecondary">@color/dc_on_secondary</item>
+
+        <item name="android:windowBackground">@color/dc_background</item>
+        <item name="android:statusBarColor">@color/dc_background</item>
+        <item name="android:navigationBarColor">@color/dc_background</item>
+
+        <!-- 夜间模式下，状态栏图标需要变亮色 -->
+        <item name="android:windowLightStatusBar">false</item>
+
+        <item name="materialButtonStyle">@style/Widget.DressCode.Button</item>
+        <item name="textInputStyle">@style/Widget.DressCode.TextInputLayout</item>
+
     </style>
+
 </resources>

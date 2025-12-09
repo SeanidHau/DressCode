@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <!-- 主色（成熟黑灰体系） -->
+    <color name="dc_primary">#1A1A1A</color>
+    <color name="dc_primary_dark">#000000</color>
+    <color name="dc_on_primary">#FFFFFF</color>
+
+    <!-- 强调色（如果 Button 需要） -->
+    <color name="dc_secondary">#3D3D3D</color>
+    <color name="dc_on_secondary">#FFFFFF</color>
+
+    <!-- 背景 -->
+    <color name="dc_background">#FFFFFF</color>
+    <color name="dc_surface">#F5F5F5</color>
+
+    <!-- 文本颜色 -->
+    <color name="dc_text_primary">#1A1A1A</color>
+    <color name="dc_text_secondary">#666666</color>
+    <color name="dc_text_hint">#888888</color>
+
+    <!-- 分割线/边框 -->
+    <color name="dc_divider">#EAEAEA</color>
+
 </resources>

@@ -1,0 +1,24 @@
+<resources>
+
+    <!-- 主色保持亮色，用于按钮前景 -->
+    <color name="dc_primary">#FFFFFF</color>
+    <color name="dc_primary_dark">#FFFFFF</color>
+    <color name="dc_on_primary">#000000</color>
+
+    <!-- 强调灰色，用于按钮背景 / icon 激活 -->
+    <color name="dc_secondary">#3A3A3C</color>
+    <color name="dc_on_secondary">#FFFFFF</color>
+
+    <!-- ===== 关键部分：浅灰深色模式背景 ===== -->
+    <color name="dc_background">#1C1C1E</color>   <!-- 推荐的深灰页面背景 -->
+    <color name="dc_surface">#2C2C2E</color>      <!-- 卡片/模块背景 -->
+
+    <!-- 文字颜色 -->
+    <color name="dc_text_primary">#FFFFFF</color>
+    <color name="dc_text_secondary">#C7C7CC</color>
+    <color name="dc_text_hint">#8E8E93</color>
+
+    <!-- 分割线/输入框边框 -->
+    <color name="dc_divider">#3A3A3C</color>
+
+</resources>
