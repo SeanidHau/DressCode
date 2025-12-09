@@ -22,4 +22,6 @@
     <!-- 分割线/边框 -->
     <color name="dc_divider">#EAEAEA</color>
 
+    <color name="dc_ripple">#1F000000</color>
+
 </resources>

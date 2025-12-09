@@ -1,18 +1,16 @@
 package com.dresscode.app.ui.feed;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
 
 import com.dresscode.app.R;
 import com.dresscode.app.model.FilterOption;
-
-import java.util.Arrays;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 
 public class FeedFilterDialog {
 
@@ -28,97 +26,106 @@ public class FeedFilterDialog {
 
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_feed_filter, null);
 
-        RadioGroup rgGender = view.findViewById(R.id.rgGender);
-        RadioButton rbAll = view.findViewById(R.id.rbGenderAll);
-        RadioButton rbMale = view.findViewById(R.id.rbGenderMale);
-        RadioButton rbFemale = view.findViewById(R.id.rbGenderFemale);
+        // 性别
+        MaterialButtonToggleGroup groupGender = view.findViewById(R.id.groupGender);
+        MaterialButton btnGenderAll = view.findViewById(R.id.btnGenderAll);
+        MaterialButton btnGenderMale = view.findViewById(R.id.btnGenderMale);
+        MaterialButton btnGenderFemale = view.findViewById(R.id.btnGenderFemale);
 
-        Spinner spStyle = view.findViewById(R.id.spStyle);
-        Spinner spSeason = view.findViewById(R.id.spSeason);
-        Spinner spScene = view.findViewById(R.id.spScene);
-        Spinner spWeather = view.findViewById(R.id.spWeather);
+        // 筛选维度
+        ChipGroup groupStyle = view.findViewById(R.id.groupStyle);
+        ChipGroup groupSeason = view.findViewById(R.id.groupSeason);
+        ChipGroup groupScene = view.findViewById(R.id.groupScene);
+        ChipGroup groupWeather = view.findViewById(R.id.groupWeather);
 
-        // 几个下拉选项（第一项都是“全部”）
-        String[] styles = new String[]{"全部", "休闲", "通勤", "运动", "街头", "约会", "正式"};
-        String[] seasons = new String[]{"全部", "春", "夏", "秋", "冬"};
-        String[] scenes = new String[]{"全部", "校园", "上班", "约会", "聚会", "旅行", "面试"};
-        String[] weathers = new String[]{"全部", "炎热", "适中", "寒冷", "下雨"};
+        MaterialButton btnReset = view.findViewById(R.id.btnReset);
+        MaterialButton btnApply = view.findViewById(R.id.btnApply);
 
-        setupSpinner(context, spStyle, styles, working.style);
-        setupSpinner(context, spSeason, seasons, working.season);
-        setupSpinner(context, spScene, scenes, working.scene);
-        setupSpinner(context, spWeather, weathers, working.weather);
-
-        // 初始性别选中
+        // 初始化性别
         switch (working.gender) {
             case 1:
-                rbMale.setChecked(true);
+                groupGender.check(btnGenderMale.getId());
                 break;
             case 2:
-                rbFemale.setChecked(true);
+                groupGender.check(btnGenderFemale.getId());
                 break;
             default:
-                rbAll.setChecked(true);
+                groupGender.check(btnGenderAll.getId());
                 break;
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle("筛选穿搭")
-                .setView(view)
-                .setPositiveButton("确定", (d, which) -> {
-                    // 读取性别
-                    int checkedId = rgGender.getCheckedRadioButtonId();
-                    if (checkedId == R.id.rbGenderMale) {
-                        working.gender = 1;
-                    } else if (checkedId == R.id.rbGenderFemale) {
-                        working.gender = 2;
-                    } else {
-                        working.gender = 0;
-                    }
+        // 初始化各个 ChipGroup（根据当前值选中）
+        preselectChip(groupStyle, working.style);
+        preselectChip(groupSeason, working.season);
+        preselectChip(groupScene, working.scene);
+        preselectChip(groupWeather, working.weather);
 
-                    // 读取下拉（“全部” → null）
-                    working.style = valueOrNull(styles[spStyle.getSelectedItemPosition()]);
-                    working.season = valueOrNull(seasons[spSeason.getSelectedItemPosition()]);
-                    working.scene = valueOrNull(scenes[spScene.getSelectedItemPosition()]);
-                    working.weather = valueOrNull(weathers[spWeather.getSelectedItemPosition()]);
+        BottomSheetDialog dialog = new BottomSheetDialog(context);
+        dialog.setContentView(view);
 
-                    if (listener != null) {
-                        listener.onFilterSelected(working);
-                    }
-                })
-                .setNegativeButton("重置", (d, which) -> {
-                    FilterOption reset = new FilterOption();
-                    if (listener != null) {
-                        listener.onFilterSelected(reset);
-                    }
-                })
-                .create();
+        // 应用筛选
+        btnApply.setOnClickListener(v -> {
+            // 性别
+            int checkedGenderId = groupGender.getCheckedButtonId();
+            if (checkedGenderId == btnGenderMale.getId()) {
+                working.gender = 1;
+            } else if (checkedGenderId == btnGenderFemale.getId()) {
+                working.gender = 2;
+            } else {
+                working.gender = 0;
+            }
+
+            // 其他维度（"全部" → null）
+            working.style = getChipValue(groupStyle);
+            working.season = getChipValue(groupSeason);
+            working.scene = getChipValue(groupScene);
+            working.weather = getChipValue(groupWeather);
+
+            if (listener != null) {
+                listener.onFilterSelected(working);
+            }
+            dialog.dismiss();
+        });
+
+        // 重置
+        btnReset.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onFilterSelected(new FilterOption());
+            }
+            dialog.dismiss();
+        });
 
         dialog.show();
     }
 
-    private static void setupSpinner(Context context, Spinner spinner,
-                                     String[] options, String currentValue) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                context,
-                android.R.layout.simple_spinner_item,
-                options
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+    private static void preselectChip(ChipGroup group, String value) {
+        if (value == null) {
+            // 默认选中“全部”（第一个 chip）
+            if (group.getChildCount() > 0 && group.getChildAt(0) instanceof Chip) {
+                ((Chip) group.getChildAt(0)).setChecked(true);
+            }
+            return;
+        }
 
-        int index = 0; // 默认“全部”
-        if (currentValue != null) {
-            int found = Arrays.asList(options).indexOf(currentValue);
-            if (found >= 0) {
-                index = found;
+        for (int i = 0; i < group.getChildCount(); i++) {
+            View child = group.getChildAt(i);
+            if (child instanceof Chip) {
+                Chip chip = (Chip) child;
+                if (value.equals(chip.getText().toString())) {
+                    chip.setChecked(true);
+                    return;
+                }
             }
         }
-        spinner.setSelection(index);
     }
 
-    private static String valueOrNull(String s) {
-        if ("全部".equals(s)) return null;
-        return s;
+    private static String getChipValue(ChipGroup group) {
+        int id = group.getCheckedChipId();
+        if (id == View.NO_ID) return null;
+        Chip chip = group.findViewById(id);
+        if (chip == null) return null;
+        String text = chip.getText().toString();
+        if ("全部".equals(text)) return null;
+        return text;
     }
 }

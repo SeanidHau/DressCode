@@ -1,70 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="16dp"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/dc_background">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <!-- 左侧返回键 -->
-        <ImageButton
-            android:id="@+id/btnBackSearch"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@android:color/transparent"
-            android:padding="8dp"
-            android:src="@drawable/ic_arrow_back"
-            android:contentDescription="back"
-            android:visibility="gone" />
+        <!-- 顶部标题栏 + 搜索区 -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/dc_background"
+            android:elevation="0dp"
+            app:title="发现穿搭"
+            app:titleTextColor="@color/dc_text_primary"
+            app:navigationIcon="@null" />
 
-        <!-- 中间搜索框 -->
-        <EditText
-            android:id="@+id/searchBox"
-            android:layout_width="0dp"
+        <!-- 搜索行：左返回 + 中搜索框 + 右筛选 -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:gravity="center_vertical">
+
+            <!-- 返回按钮（只在搜索模式显示） -->
+            <ImageButton
+                android:id="@+id/btnBackSearch"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@android:color/transparent"
+                android:padding="6dp"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/dc_text_primary"
+                android:visibility="gone"
+                android:contentDescription="@string/back" />
+
+            <EditText
+                android:id="@+id/searchBox"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_feed_search"
+                android:paddingStart="8dp"
+                android:paddingEnd="12dp"
+                android:gravity="center_vertical|start"
+                android:hint="@string/feed_search_hint"
+                android:textColor="@color/dc_text_primary"
+                android:textColorHint="@color/dc_text_hint"
+                android:textSize="14sp"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="8dp" />
+
+            <!-- 清空按钮 -->
+            <ImageButton
+                android:id="@+id/btnClearSearch"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@android:color/transparent"
+                android:padding="6dp"
+                android:src="@drawable/ic_close"
+                app:tint="@color/dc_text_secondary"
+                android:visibility="gone"
+                android:contentDescription="@string/clear" />
+
+            <!-- 筛选按钮 -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFilter"
+                style="@style/Widget.DressCode.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:minHeight="40dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:text="@string/filter"
+                android:textSize="14sp"
+                app:icon="@drawable/ic_filter"
+                app:iconSize="20dp"
+                app:iconPadding="4dp" />
+        </LinearLayout>
+
+        <!-- 瀑布流列表 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:hint="搜索穿搭..."
-            android:singleLine="true"
-            android:imeOptions="actionSearch" />
-
-        <!-- 右侧清除按钮 -->
-        <Button
-            android:id="@+id/btnClearSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="清除"
-            android:visibility="gone" />
-
-        <!-- 最右筛选 -->
-        <Button
-            android:id="@+id/btnFilter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="筛选" />
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="88dp"
+            android:clipToPadding="false" />
     </LinearLayout>
 
-
-    <!-- 搜索历史：默认隐藏，显示在搜索框正下方 -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSearchHistory"
+    <!-- 搜索历史浮层卡片 -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="120dp"
         android:visibility="gone"
-        android:layout_marginTop="4dp"
-        android:overScrollMode="never" />
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        android:backgroundTint="@color/dc_surface">
 
-    <!-- 穿搭瀑布流列表 -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1" />
-</LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSearchHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:padding="8dp" />
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

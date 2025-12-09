@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="back">返回</string>
+    <string name="clear">清除</string>
+    <string name="filter">筛选</string>
+    <string name="favorite">收藏</string>
+    <string name="feed_search_hint">搜索：通勤 / 学院风 / 牛仔</string>
 </resources>

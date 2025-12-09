@@ -21,4 +21,6 @@
     <!-- 分割线/输入框边框 -->
     <color name="dc_divider">#3A3A3C</color>
 
+    <color name="dc_ripple">#33FFFFFF</color>
+
 </resources>

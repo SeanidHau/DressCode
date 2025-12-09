@@ -1,101 +1,343 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="24dp"
+    android:background="@color/dc_surface">
+
+    <!-- 顶部标题行 -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="筛选穿搭"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/dc_text_primary" />
+
+    <TextView
+        android:id="@+id/tvSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="根据你的习惯筛选性别、风格、季节和场景"
+        android:textSize="12sp"
+        android:textColor="@color/dc_text_secondary" />
+
+    <!-- 性别 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="性别"
+        android:textSize="13sp"
+        android:textColor="@color/dc_text_secondary" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/groupGender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGenderAll"
+            style="@style/Widget.DressCode.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="不限" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGenderMale"
+            style="@style/Widget.DressCode.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="男生" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGenderFemale"
+            style="@style/Widget.DressCode.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="女生" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <!-- 风格 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="风格"
+        android:textSize="13sp"
+        android:textColor="@color/dc_text_secondary" />
 
     <LinearLayout
-        android:orientation="vertical"
-        android:padding="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
 
-        <!-- 性别 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="性别"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <RadioGroup
-            android:id="@+id/rgGender"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/groupStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:singleLine="true"
+            app:singleSelection="true">
 
-            <RadioButton
-                android:id="@+id/rbGenderAll"
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStyleAll"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:text="全部" />
 
-            <RadioButton
-                android:id="@+id/rbGenderMale"
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStyleCasual"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="男" />
+                android:layout_height="48dp"
+                android:text="休闲" />
 
-            <RadioButton
-                android:id="@+id/rbGenderFemale"
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStyleWork"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="女" />
-        </RadioGroup>
+                android:layout_height="48dp"
+                android:text="通勤" />
 
-        <!-- 风格 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="风格"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStyleSport"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="运动" />
 
-        <Spinner
-            android:id="@+id/spStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStyleStreet"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="街头" />
 
-        <!-- 季节 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="季节"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStyleDate"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="约会" />
 
-        <Spinner
-            android:id="@+id/spSeason"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <!-- 场景 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="场景"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/spScene"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <!-- 天气 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="天气"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/spWeather"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStyleFormal"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="正式" />
+        </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
-</ScrollView>
+
+    <!-- 季节 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="季节"
+        android:textSize="13sp"
+        android:textColor="@color/dc_text_secondary" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/groupSeason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:singleLine="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSeasonAll"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="全部" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSeasonSpring"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="春" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSeasonSummer"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="夏" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSeasonAutumn"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="秋" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSeasonWinter"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="冬" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- 场景 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="场景"
+        android:textSize="13sp"
+        android:textColor="@color/dc_text_secondary" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/groupScene"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:singleLine="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSceneAll"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="全部" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSceneCampus"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="校园" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSceneWork"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="上班" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSceneDate"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="约会" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSceneParty"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="聚会" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSceneTravel"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="旅行" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSceneInterview"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="面试" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- 天气 -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="天气"
+        android:textSize="13sp"
+        android:textColor="@color/dc_text_secondary" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/groupWeather"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:singleLine="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipWeatherAll"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="全部" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipWeatherHot"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="炎热" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipWeatherMild"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="适中" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipWeatherCold"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="寒冷" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipWeatherRain"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="下雨" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- 底部按钮 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReset"
+            style="@style/Widget.DressCode.Button.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="重置" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApply"
+            style="@style/Widget.DressCode.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginStart="12dp"
+            android:text="应用筛选" />
+    </LinearLayout>
+
+</LinearLayout>

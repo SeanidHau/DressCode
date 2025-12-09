@@ -52,7 +52,7 @@ public class FeedFragment extends Fragment {
     private FilterOption currentFilter = new FilterOption();
     private List<SearchHistoryEntity> historyCache = new ArrayList<>();
     private ImageButton btnBackSearch;
-    private Button btnClearSearch;
+    private ImageButton btnClearSearch;
     private boolean isInSearchMode = false;
 
     public FeedFragment() {

@@ -3,7 +3,73 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
+
+    <!-- 极简太阳图标：圆 + 8 条短光线 -->
     <path
-        android:fillColor="@android:color/black"
-        android:pathData="M12,4a1,1 0 0 1 1,1v2a1,1 0 0 1 -2,0V5a1,1 0 0 1 1,-1zM12,17a1,1 0 0 1 1,1v2a1,1 0 0 1 -2,0v-2a1,1 0 0 1 1,-1zM4,11a1,1 0 0 1 1,-1h2a1,1 0 0 1 0,2H5a1,1 0 0 1 -1,-1zM17,12a1,1 0 0 1 1,-1h2a1,1 0 0 1 0,2h-2a1,1 0 0 1 -1,-1zM7.05,7.05a1,1 0 0 1 1.41,0L10,8.59a1,1 0 1 1 -1.41,1.41L7.05,8.46a1,1 0 0 1 0,-1.41zM14,14a1,1 0 0 1 1.41,0l1.54,1.54a1,1 0 0 1 -1.41,1.41L14,15.41a1,1 0 0 1 0,-1.41zM7.05,16.95a1,1 0 0 1 0,-1.41L8.59,14a1,1 0 1 1 1.41,1.41L8.46,16.95a1,1 0 0 1 -1.41,0zM14,10a4,4 0 1 0 -8,0a4,4 0 0 0 8,0z"/>
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="@color/dc_text_primary"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="
+            M12,7
+            a5,5 0 1 1 0,10
+            a5,5 0 1 1 0,-10" />
+
+    <!-- 上 -->
+    <path
+        android:strokeColor="@color/dc_text_primary"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M12,2 L12,4" />
+
+    <!-- 下 -->
+    <path
+        android:strokeColor="@color/dc_text_primary"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M12,20 L12,22" />
+
+    <!-- 左 -->
+    <path
+        android:strokeColor="@color/dc_text_primary"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M2,12 L4,12" />
+
+    <!-- 右 -->
+    <path
+        android:strokeColor="@color/dc_text_primary"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M20,12 L22,12" />
+
+    <!-- 左上 -->
+    <path
+        android:strokeColor="@color/dc_text_primary"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M5,5 L6.5,6.5" />
+
+    <!-- 右上 -->
+    <path
+        android:strokeColor="@color/dc_text_primary"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M17.5,6.5 L19,5" />
+
+    <!-- 左下 -->
+    <path
+        android:strokeColor="@color/dc_text_primary"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M5,19 L6.5,17.5" />
+
+    <!-- 右下 -->
+    <path
+        android:strokeColor="@color/dc_text_primary"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:pathData="M17.5,17.5 L19,19" />
+
 </vector>
