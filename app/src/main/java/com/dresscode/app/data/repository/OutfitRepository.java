@@ -49,17 +49,6 @@ public class OutfitRepository {
 
     // 搜索（本地 Room + 可选同步后端）
     public LiveData<List<OutfitEntity>> search(String keyword) {
-        // 记录搜索历史
-        executor.execute(() -> {
-            SearchHistoryEntity history = new SearchHistoryEntity();
-            history.keyword = keyword;
-            history.time = System.currentTimeMillis();
-            searchHistoryDao.insert(history);
-
-            // 如果你有后端，可以在这里同步一下最新搜索结果：
-            // syncFromRemote(keyword);
-        });
-
         String pattern = "%" + keyword + "%";
         return outfitDao.search(pattern);
     }
@@ -116,5 +105,25 @@ public class OutfitRepository {
 
     public LiveData<List<SearchHistoryEntity>> getSearchHistory() {
         return searchHistoryDao.getRecent();
+    }
+
+    public void insertSearchHistory(SearchHistoryEntity entity) {
+        searchHistoryDao.insert(entity);
+    }
+
+    public void recordSearchHistory(String keyword) {
+        if (keyword == null) return;
+        String k = keyword.trim();
+        if (k.isEmpty()) return;
+
+        // 先删同词，再插入新记录（time 最新）
+        searchHistoryDao.deleteByKeyword(k);
+
+        SearchHistoryEntity e = new SearchHistoryEntity();
+        e.keyword = k;
+        e.time = System.currentTimeMillis();
+        searchHistoryDao.insert(e);
+
+        searchHistoryDao.trimTo(20);
     }
 }

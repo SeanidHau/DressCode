@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,6 +55,7 @@ public class FeedFragment extends Fragment {
     private ImageButton btnBackSearch;
     private ImageButton btnClearSearch;
     private boolean isInSearchMode = false;
+    private View historyCard;
 
     public FeedFragment() {
         // Required empty public constructor
@@ -72,6 +74,7 @@ public class FeedFragment extends Fragment {
         btnBackSearch = v.findViewById(R.id.btnBackSearch);
         btnClearSearch = v.findViewById(R.id.btnClearSearch);
         Button btnFilter = v.findViewById(R.id.btnFilter);
+        historyCard = v.findViewById(R.id.historyCard);
 
         recyclerView.setLayoutManager(
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -125,6 +128,12 @@ public class FeedFragment extends Fragment {
             }
         });
 
+        TextView btnClearHistory = v.findViewById(R.id.btnClearHistory);
+        btnClearHistory.setOnClickListener(v1 -> {
+            viewModel.clearSearchHistory();
+            hideHistory();
+        });
+
         initViewModel();
 
         applyDefaultFilterFromSettings();
@@ -176,6 +185,13 @@ public class FeedFragment extends Fragment {
 
     private void setupSearch() {
         searchBox.setOnEditorActionListener((v, actionId, event) -> {
+            boolean isSearch = actionId == EditorInfo.IME_ACTION_SEARCH
+                    || actionId == EditorInfo.IME_ACTION_DONE
+                    || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                    && event.getAction() == KeyEvent.ACTION_DOWN);
+
+            if (!isSearch) return false;
+
             String keyword = searchBox.getText().toString().trim();
             if (!keyword.isEmpty()) {
                 enterSearchMode();
@@ -208,8 +224,8 @@ public class FeedFragment extends Fragment {
                         && historyAdapter.getItemCount() > 0) {
                     showHistory();
                     btnClearSearch.setVisibility(View.GONE);
-                } else if (s.length() > 0) {
-                    hideHistory();
+                } else if (s.length() > 0 && searchBox.hasFocus()) {
+                    showHistory();
                     btnClearSearch.setVisibility(View.VISIBLE);
                 }
             }
@@ -246,22 +262,23 @@ public class FeedFragment extends Fragment {
     }
 
     private void performSearch(String keyword) {
+        viewModel.addSearchHistory(keyword);   // ✅ 新增：写入历史
+
         viewModel.search(keyword).observe(getViewLifecycleOwner(), result -> {
             adapter.submitList(result);
         });
 
         btnClearSearch.setVisibility(View.VISIBLE);
-
         hideHistory();
         hideKeyboard();
     }
 
     private void showHistory() {
-        rvHistory.setVisibility(View.VISIBLE);
+        if (historyCard != null) historyCard.setVisibility(View.VISIBLE);
     }
 
     private void hideHistory() {
-        rvHistory.setVisibility(View.GONE);
+        if (historyCard != null) historyCard.setVisibility(View.GONE);
     }
 
     private void hideKeyboard() {

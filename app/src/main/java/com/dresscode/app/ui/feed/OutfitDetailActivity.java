@@ -139,8 +139,8 @@ public class OutfitDetailActivity extends AppCompatActivity {
     private void updateFavoriteIcon() {
         btnFavorite.setImageResource(
                 isFavorite
-                        ? android.R.drawable.btn_star_big_on
-                        : android.R.drawable.btn_star_big_off
+                        ? R.drawable.ic_star_filled
+                        : R.drawable.ic_star_border
         );
     }
 

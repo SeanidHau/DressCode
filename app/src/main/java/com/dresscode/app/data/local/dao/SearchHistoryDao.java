@@ -13,13 +13,20 @@ import java.util.List;
 @Dao
 public interface SearchHistoryDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(SearchHistoryEntity entity);
-
     @Query("SELECT * FROM search_history ORDER BY time DESC LIMIT 10")
     LiveData<List<SearchHistoryEntity>> getRecent();
+
+    // ✅ 同关键词去重：先删掉旧的
+    @Query("DELETE FROM search_history WHERE keyword = :keyword")
+    void deleteByKeyword(String keyword);
+
+    @Insert
+    void insert(SearchHistoryEntity entity);
 
     @Query("DELETE FROM search_history")
     void clearAll();
 
+    @Query("DELETE FROM search_history WHERE id NOT IN (SELECT id FROM search_history ORDER BY time DESC LIMIT :keep)")
+    void trimTo(int keep);
 }
+

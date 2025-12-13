@@ -5,4 +5,5 @@
     <string name="filter">筛选</string>
     <string name="favorite">收藏</string>
     <string name="feed_search_hint">搜索：通勤 / 学院风 / 牛仔</string>
+    <string name="outfit_detail_image">大图</string>
 </resources>

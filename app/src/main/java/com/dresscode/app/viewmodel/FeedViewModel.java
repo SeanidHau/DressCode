@@ -12,6 +12,8 @@ import com.dresscode.app.data.repository.OutfitRepository;
 import com.dresscode.app.model.FilterOption;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FeedViewModel extends ViewModel {
 
@@ -59,4 +61,11 @@ public class FeedViewModel extends ViewModel {
     public void clearSearchHistory() {
         repository.clearSearchHistory();
     }
+
+    private final ExecutorService io = Executors.newSingleThreadExecutor();
+
+    public void addSearchHistory(String keyword) {
+        io.execute(() -> repository.recordSearchHistory(keyword));
+    }
+
 }
