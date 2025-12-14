@@ -15,7 +15,8 @@ import com.dresscode.app.ui.weather.WeatherFragment;
 import com.dresscode.app.utils.PreferenceUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements WeatherFragment.Navigator {
 
     private BottomNavigationView bottomNav;
 
@@ -72,4 +73,13 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.container, fragment)
                 .commit();
     }
+
+    @Override
+    public void navigateToFeed() {
+        if (bottomNav != null) {
+            // 直接选中 Feed tab，会自动触发 setOnItemSelectedListener
+            bottomNav.setSelectedItemId(R.id.nav_feed);
+        }
+    }
+
 }

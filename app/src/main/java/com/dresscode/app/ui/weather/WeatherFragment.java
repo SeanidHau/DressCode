@@ -2,9 +2,12 @@ package com.dresscode.app.ui.weather;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.os.Looper;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +15,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,23 +22,21 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.dresscode.app.R;
+import com.dresscode.app.data.local.entity.CityEntity;
+import com.dresscode.app.data.local.entity.WeatherCacheEntity;
+import com.dresscode.app.ui.weather.CitySelectActivity;
+import com.dresscode.app.utils.WeatherTextMapper;
+import com.dresscode.app.viewmodel.WeatherViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
-import com.google.android.gms.tasks.CancellationTokenSource;
-import android.location.Location;
-
-import com.dresscode.app.R;
-import com.dresscode.app.data.local.entity.CityEntity;
-import com.dresscode.app.data.local.entity.WeatherCacheEntity;
-import com.dresscode.app.viewmodel.WeatherViewModel;
-import com.dresscode.app.ui.weather.CitySelectActivity;
-import com.dresscode.app.utils.WeatherTextMapper;
 
 public class WeatherFragment extends Fragment {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1001;
+    private static final String TAG = "WeatherFragment";
 
     private WeatherViewModel viewModel;
     private FusedLocationProviderClient fusedLocationClient;
@@ -49,8 +48,28 @@ public class WeatherFragment extends Fragment {
     private ProgressBar progressBar;
     private ImageButton btnLocation;
     private Button btnChangeCity;
+    private TextView tvMeta, tvFeelsLike, tvHumidity, tvWind, tvClothingHint, tvOutfitTip;
+    private Button btnGoFeed;
 
-    public WeatherFragment() { }
+    public interface Navigator {
+        void navigateToFeed();
+    }
+
+    private Navigator navigator;
+
+    @Override
+    public void onAttach(@NonNull android.content.Context context) {
+        super.onAttach(context);
+        if (context instanceof Navigator) {
+            navigator = (Navigator) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        navigator = null;
+    }
 
     @Nullable
     @Override
@@ -65,7 +84,9 @@ public class WeatherFragment extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+        fusedLocationClient =
+                LocationServices.getFusedLocationProviderClient(requireContext());
+
         tvCityName = view.findViewById(R.id.tvCityName);
         tvTemperature = view.findViewById(R.id.tvTemperature);
         tvCondition = view.findViewById(R.id.tvCondition);
@@ -73,16 +94,58 @@ public class WeatherFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
         btnLocation = view.findViewById(R.id.btnLocation);
         btnChangeCity = view.findViewById(R.id.btnChangeCity);
+        tvMeta = view.findViewById(R.id.tvMeta);
+        tvFeelsLike = view.findViewById(R.id.tvFeelsLike);
+        tvHumidity = view.findViewById(R.id.tvHumidity);
+        tvWind = view.findViewById(R.id.tvWind);
+        tvClothingHint = view.findViewById(R.id.tvClothingHint);
+        tvOutfitTip = view.findViewById(R.id.tvOutfitTip);
+        btnGoFeed = view.findViewById(R.id.btnGoFeed);
 
-        viewModel = new ViewModelProvider(this,
-                new ViewModelProvider.AndroidViewModelFactory(requireActivity().getApplication()))
-                .get(WeatherViewModel.class);
+        viewModel = new ViewModelProvider(
+                this,
+                new ViewModelProvider.AndroidViewModelFactory(requireActivity().getApplication())
+        ).get(WeatherViewModel.class);
+
+        viewModel.getCurrentWeather().observe(
+                getViewLifecycleOwner(),
+                weather -> {
+                    if (weather != null) {
+                        bindWeather(weather);
+                    }
+                }
+        );
+
+        viewModel.isLoading().observe(getViewLifecycleOwner(), loading ->
+                progressBar.setVisibility(Boolean.TRUE.equals(loading)
+                        ? View.VISIBLE
+                        : View.GONE)
+        );
+
+        viewModel.getError().observe(getViewLifecycleOwner(), this::showStatus);
+
+        btnLocation.setOnClickListener(v -> checkLocationPermission());
+
+        btnChangeCity.setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), CitySelectActivity.class))
+        );
+
+        btnGoFeed.setOnClickListener(v -> {
+            if (navigator != null) {
+                navigator.navigateToFeed();
+            } else {
+                log("Host activity does not implement WeatherFragment.Navigator");
+            }
+        });
 
         viewModel.getCurrentCity().observe(getViewLifecycleOwner(), city -> {
             if (city != null) {
-                tvCityName.setText(city.displayName);  // 中文
+                tvCityName.setText(city.displayName);
+
+                // ✅ 关键：切换 currentWeather 数据源（Room 监听立刻换到新 cityId）
                 viewModel.observeWeatherForCity(city.id);
-                observeWeather();
+
+                // ✅ 关键：触发刷新（远端→Room），Room 更新会立刻推给 currentWeather observer
                 viewModel.refreshWeather(city);
             } else {
                 CityEntity defaultCity = new CityEntity("杭州", "Hangzhou", 0, 0, true);
@@ -90,52 +153,64 @@ public class WeatherFragment extends Fragment {
             }
         });
 
-        // Loading 状态
-        viewModel.isLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            progressBar.setVisibility(Boolean.TRUE.equals(isLoading) ? View.VISIBLE : View.GONE);
-        });
-
-        // 错误提示
-        viewModel.getError().observe(getViewLifecycleOwner(), msg -> {
-            if (msg != null) {
-                tvError.setVisibility(View.VISIBLE);
-                tvError.setText(msg);
-            } else {
-                tvError.setVisibility(View.GONE);
-            }
-        });
-
-        btnLocation.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "点击了定位按钮", Toast.LENGTH_SHORT).show();
-            checkLocationPermission();
-        });
-
-        btnChangeCity.setOnClickListener(v -> {
-            startActivity(new Intent(requireContext(), CitySelectActivity.class));
-        });
     }
 
     private void observeWeather() {
-        if (viewModel.getCurrentWeather() == null) return;
+        if (viewModel.getCurrentWeather() == null) {
+            log("getCurrentWeather() is null (not ready yet)");
+            return;
+        }
         viewModel.getCurrentWeather().observe(getViewLifecycleOwner(), weather -> {
-            if (weather != null) {
-                bindWeather(weather);
-            }
+            if (weather != null) bindWeather(weather);
         });
     }
 
-    private void bindWeather(WeatherCacheEntity weather) {
-        tvTemperature.setText(String.format("%.1f°C", weather.temperature));
-        tvCondition.setText(weather.conditionText != null ? WeatherTextMapper.toChinese(weather.conditionText) : "—");
+    private void bindWeather(WeatherCacheEntity w) {
+        // 主信息
+        tvTemperature.setText(String.format("%.1f°C", w.temperature));
+
+        // 你的 Repository 已经可能存中文了，这里不要重复 toChinese（会导致“中文再翻译”）
+        // 保险做法：如果包含英文字母再 mapper
+        String cond = (w.conditionText == null || w.conditionText.trim().isEmpty()) ? "—" : w.conditionText;
+        if (containsAsciiLetter(cond)) {
+            cond = WeatherTextMapper.toChinese(cond);
+        }
+        tvCondition.setText(cond);
+
+        // 更新时间（你现在字段名是 updateTime，毫秒）
+        if (w.updateTime > 0) {
+            tvMeta.setText("更新于 " + formatTimeMillis(w.updateTime));
+        } else {
+            tvMeta.setText("刚刚更新");
+        }
+
+        // 指标四宫格
+        double feels = (w.feelsLike != 0.0) ? w.feelsLike : w.temperature;
+        tvFeelsLike.setText(String.format("%.1f°C", feels));
+
+        tvHumidity.setText(w.humidity > 0 ? (w.humidity + "%") : "—");
+        tvWind.setText(w.windSpeed > 0 ? String.format("%.1f m/s", w.windSpeed) : "—");
+
+        // 穿衣建议（用温度）
+        String clothing = getClothingHint(w.temperature);
+        tvClothingHint.setText(clothing);
+
+        // 穿搭建议文案：克制、短句
+        tvOutfitTip.setText("建议：" + clothing + "。当前「" + cond + "」，以舒适与层次为主。");
     }
 
+    /* ---------------- 定位流程 ---------------- */
+
     private void checkLocationPermission() {
-        int state = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        int state = ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+        );
+
         if (state == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(requireContext(), "定位权限已授予，开始获取位置", Toast.LENGTH_SHORT).show();
+            showStatus("正在获取当前位置…");
             getCurrentLocation();
         } else {
-            Toast.makeText(requireContext(), "请求定位权限", Toast.LENGTH_SHORT).show();
             requestPermissions(
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION_PERMISSION
@@ -143,31 +218,30 @@ public class WeatherFragment extends Fragment {
         }
     }
 
-    @SuppressLint("MissingPermission") // 因为前面已经 check 过权限，压掉 Lint 警告
+    @SuppressLint("MissingPermission")
     private void getCurrentLocation() {
-        int state = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        int state = ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+        );
         if (state != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(requireContext(), "没有定位权限，getCurrentLocation 直接返回", Toast.LENGTH_SHORT).show();
+            log("getCurrentLocation called without permission");
             return;
         }
 
-        try {
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(location -> {
-                        if (location != null) {
-                            Toast.makeText(requireContext(), "getLastLocation 获取到位置", Toast.LENGTH_SHORT).show();
-                            handleLocation(location);
-                        } else {
-                            Toast.makeText(requireContext(), "lastLocation 为 null，尝试主动请求当前位置", Toast.LENGTH_SHORT).show();
-                            requestFreshLocation();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(requireContext(), "获取 lastLocation 失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        } catch (SecurityException se) {
-            Toast.makeText(requireContext(), "SecurityException: " + se.getMessage(), Toast.LENGTH_SHORT).show();
-        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        handleLocation(location);
+                    } else {
+                        showStatus("正在获取当前位置…");
+                        requestFreshLocation();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    showStatus("定位失败，请手动选择城市");
+                    log("getLastLocation failed: " + e.getMessage());
+                });
     }
 
     @SuppressLint("MissingPermission")
@@ -176,54 +250,36 @@ public class WeatherFragment extends Fragment {
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
         );
-        if (state != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(requireContext(),
-                    "没有定位权限，requestLocationUpdates 直接返回",
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (state != PackageManager.PERMISSION_GRANTED) return;
 
-        // 构造一次性的位置请求：1 秒一次，只要 1 次更新
         com.google.android.gms.location.LocationRequest request =
                 new com.google.android.gms.location.LocationRequest.Builder(
-                        Priority.PRIORITY_BALANCED_POWER_ACCURACY,   // 精度 & 省电平衡
-                        1000                                         // 1 秒
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        1000
                 )
-                        .setMaxUpdates(1)    // 只要 1 次结果
+                        .setMaxUpdates(1)
                         .build();
-
-        Toast.makeText(requireContext(), "开始 requestLocationUpdates", Toast.LENGTH_SHORT).show();
 
         fusedLocationClient.requestLocationUpdates(
                 request,
                 new com.google.android.gms.location.LocationCallback() {
+
                     @Override
                     public void onLocationResult(
-                            @NonNull com.google.android.gms.location.LocationResult locationResult) {
-                        fusedLocationClient.removeLocationUpdates(this); // 拿到就取消订阅
-
-                        if (locationResult == null || locationResult.getLastLocation() == null) {
-                            Toast.makeText(requireContext(),
-                                    "requestLocationUpdates 仍然没有位置",
-                                    Toast.LENGTH_SHORT).show();
-                            return;
+                            @NonNull com.google.android.gms.location.LocationResult result) {
+                        fusedLocationClient.removeLocationUpdates(this);
+                        if (result.getLastLocation() != null) {
+                            handleLocation(result.getLastLocation());
+                        } else {
+                            showStatus("定位失败，请手动选择城市");
                         }
-
-                        Location location = locationResult.getLastLocation();
-                        Toast.makeText(requireContext(),
-                                "requestLocationUpdates 获取到位置",
-                                Toast.LENGTH_SHORT).show();
-                        handleLocation(location);
                     }
 
                     @Override
                     public void onLocationAvailability(
                             @NonNull LocationAvailability availability) {
-                        super.onLocationAvailability(availability);
                         if (!availability.isLocationAvailable()) {
-                            Toast.makeText(requireContext(),
-                                    "当前定位不可用，建议手动选择城市",
-                                    Toast.LENGTH_SHORT).show();
+                            showStatus("当前定位不可用，请手动选择城市");
                         }
                     }
                 },
@@ -235,27 +291,60 @@ public class WeatherFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireContext(), "用户同意了定位权限", Toast.LENGTH_SHORT).show();
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showStatus("正在获取当前位置…");
                 getCurrentLocation();
             } else {
-                Toast.makeText(requireContext(), "用户拒绝了定位权限", Toast.LENGTH_SHORT).show();
+                showStatus("未授予定位权限，请手动选择城市");
             }
         }
     }
 
     private void handleLocation(Location location) {
-        double lat = location.getLatitude();
-        double lon = location.getLongitude();
-
-        Toast.makeText(requireContext(),
-                "定位成功: " + lat + ", " + lon,
-                Toast.LENGTH_SHORT).show();
-
-        // 这里调用你之前写的 updateCityByLocation
-        viewModel.updateCityByLocation(lat, lon);
+        showStatus(null);
+        log("Location: " + location.getLatitude() + ", " + location.getLongitude());
+        viewModel.updateCityByLocation(
+                location.getLatitude(),
+                location.getLongitude()
+        );
     }
+
+    /* ---------------- UI & Log ---------------- */
+
+    private void showStatus(@Nullable String msg) {
+        if (msg == null || msg.trim().isEmpty()) {
+            tvError.setVisibility(View.GONE);
+        } else {
+            tvError.setVisibility(View.VISIBLE);
+            tvError.setText(msg);
+        }
+    }
+
+    private void log(String msg) {
+        Log.d(TAG, msg);
+    }
+
+    private String formatTimeMillis(long ms) {
+        java.text.SimpleDateFormat sdf =
+                new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
+        return sdf.format(new java.util.Date(ms));
+    }
+
+    private String getClothingHint(double t) {
+        if (t >= 28) return "短袖 / 薄衬衫";
+        if (t >= 20) return "薄外套 / 长袖";
+        if (t >= 12) return "风衣 / 针织衫";
+        return "厚外套 / 围巾";
+    }
+
+    private boolean containsAsciiLetter(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) return true;
+        }
+        return false;
+    }
+
 }

@@ -2,9 +2,12 @@ package com.dresscode.app.data.local.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "city")
+@Entity(
+        tableName = "city",
+        indices = {@Index(value = {"queryName"}, unique = true)})
 public class CityEntity {
 
     @PrimaryKey(autoGenerate = true)
@@ -23,6 +26,8 @@ public class CityEntity {
 
     public boolean isCurrent;
 
+    public long lastUsedTime;
+
     public CityEntity(@NonNull String displayName,
                       @NonNull String queryName,
                       double lat,
@@ -33,5 +38,6 @@ public class CityEntity {
         this.lat = lat;
         this.lng = lng;
         this.isCurrent = isCurrent;
+        this.lastUsedTime = 0L;
     }
 }

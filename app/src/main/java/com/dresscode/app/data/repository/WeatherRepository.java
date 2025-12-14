@@ -64,15 +64,28 @@ public class WeatherRepository {
 
     public void setCurrentCity(CityEntity city) {
         executor.execute(() -> {
+            long now = System.currentTimeMillis();
+
+            // 1) 如果还没入库，先插入（因为 queryName 有 unique index，不会重复）
             long id = city.id;
             if (id == 0) {
+                city.lastUsedTime = now;
                 id = cityDao.insertCity(city);
                 city.id = (int) id;
+            } else {
+                // 已存在：只更新最近使用时间
+                cityDao.touchCity(city.id, now);
             }
+
+            // 2) 切当前标记
             cityDao.clearCurrentFlags();
             cityDao.setCurrentCity(city.id);
+
+            // 3) 再 touch 一下，确保 current 的那条一定在最近列表最前
+            cityDao.touchCity(city.id, now);
         });
     }
+
 
     public void insertCityIfNotExists(CityEntity city) {
         executor.execute(() -> {
@@ -84,12 +97,17 @@ public class WeatherRepository {
         });
     }
 
+    public LiveData<List<CityEntity>> getRecentCities() {
+        return cityDao.getRecentCities();
+    }
+
     /** 从后端刷新天气并写入 Room */
     public void refreshWeatherForCity(CityEntity city, Runnable onSuccess, Runnable onError) {
         Call<WeatherResponse> call = weatherApi.getCurrentWeather(
                 city.queryName,
                 ApiKeys.OPEN_WEATHER_API_KEY,
-                "metric"
+                "metric",
+                "zh_cn"
         );
 
         call.enqueue(new Callback<WeatherResponse>() {
@@ -98,25 +116,39 @@ public class WeatherRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     WeatherResponse body = response.body();
 
-                    String name = body.cityName != null ? body.cityName : city.queryName;
                     double temp = (body.main != null) ? body.main.temp : 0.0;
+                    double feels = (body.main != null) ? body.main.feelsLike : temp;
+                    int humidity = (body.main != null) ? body.main.humidity : 0;
+                    int pressure = (body.main != null) ? body.main.pressure : 0;
+
+                    double wind = (body.wind != null) ? body.wind.speed : 0.0;
+
                     String desc = null;
                     if (body.weather != null && !body.weather.isEmpty()) {
-                        desc = WeatherTextMapper.toChinese(body.weather.get(0).description);
+                        // 已经 lang=zh_cn，这里可以不 mapper；但你保留 mapper 也行
+                        desc = body.weather.get(0).description;
+                        desc = WeatherTextMapper.toChinese(desc); // 如果你 mapper 会处理中文，就保留
                     }
+
+                    long updateTime = (body.dt > 0) ? body.dt * 1000L : System.currentTimeMillis();
 
                     WeatherCacheEntity entity = new WeatherCacheEntity(
                             city.id,
                             city.displayName,
                             temp,
+                            feels,
+                            humidity,
+                            wind,
+                            pressure,
                             desc,
-                            System.currentTimeMillis()
+                            updateTime
                     );
 
                     executor.execute(() -> {
                         weatherDao.insertOrUpdate(entity);
                         if (onSuccess != null) onSuccess.run();
                     });
+
                 } else {
                     if (onError != null) onError.run();
                 }
@@ -135,7 +167,8 @@ public class WeatherRepository {
         Call<WeatherResponse> call = weatherApi.getCurrentWeatherByCoord(
                 lat, lon,
                 ApiKeys.OPEN_WEATHER_API_KEY,
-                "metric"
+                "metric",
+                "zh_cn"
         );
 
         call.enqueue(new Callback<WeatherResponse>() {
@@ -157,11 +190,39 @@ public class WeatherRepository {
                     );
 
                     executor.execute(() -> {
+                        city.lastUsedTime = System.currentTimeMillis();
                         long id = cityDao.insertCity(city);
                         city.id = (int) id;
 
                         cityDao.clearCurrentFlags();
                         cityDao.setCurrentCity(city.id);
+
+                        double temp = (body.main != null) ? body.main.temp : 0.0;
+                        double feels = (body.main != null) ? body.main.feelsLike : temp;
+                        int humidity = (body.main != null) ? body.main.humidity : 0;
+                        int pressure = (body.main != null) ? body.main.pressure : 0;
+                        double wind = (body.wind != null) ? body.wind.speed : 0.0;
+
+                        String desc = null;
+                        if (body.weather != null && !body.weather.isEmpty()) {
+                            desc = body.weather.get(0).description;
+                            desc = WeatherTextMapper.toChinese(desc);
+                        }
+
+                        long updateTime = (body.dt > 0) ? body.dt * 1000L : System.currentTimeMillis();
+
+                        WeatherCacheEntity cache = new WeatherCacheEntity(
+                                city.id,
+                                city.displayName,
+                                temp,
+                                feels,
+                                humidity,
+                                wind,
+                                pressure,
+                                desc,
+                                updateTime
+                        );
+                        weatherDao.insertOrUpdate(cache);
 
                         if (onSuccess != null) onSuccess.run();
                     });

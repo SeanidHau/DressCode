@@ -34,4 +34,11 @@ public interface CityDao {
 
     @Query("SELECT COUNT(*) FROM city WHERE queryName = :queryName")
     int countByQueryName(String queryName);
+
+    @Query("SELECT * FROM city WHERE lastUsedTime > 0 ORDER BY lastUsedTime DESC LIMIT 20")
+    LiveData<List<CityEntity>> getRecentCities();
+
+    @Query("UPDATE city SET lastUsedTime = :t WHERE id = :cityId")
+    void touchCity(int cityId, long t);
+
 }

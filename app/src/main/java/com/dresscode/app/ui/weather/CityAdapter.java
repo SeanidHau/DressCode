@@ -21,12 +21,22 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
         void onCityClick(CityEntity city);
     }
 
+    // ✅ 用于 Activity 控制空态
+    public interface OnFilteredListener {
+        void onFiltered(int shownCount, String keyword);
+    }
+
     private final List<CityEntity> fullList = new ArrayList<>();
     private final List<CityEntity> displayList = new ArrayList<>();
     private final OnCityClickListener listener;
+    private OnFilteredListener filteredListener;
 
     public CityAdapter(OnCityClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setOnFilteredListener(OnFilteredListener l) {
+        this.filteredListener = l;
     }
 
     public void setData(List<CityEntity> cities) {
@@ -39,17 +49,32 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
 
     public void filter(String keyword) {
         displayList.clear();
-        if (keyword == null || keyword.trim().isEmpty()) {
+
+        String key = keyword == null ? "" : keyword.trim();
+        if (key.isEmpty()) {
             displayList.addAll(fullList);
         } else {
-            String lower = keyword.toLowerCase(Locale.getDefault());
+            String lower = key.toLowerCase(Locale.getDefault());
             for (CityEntity c : fullList) {
-                if (c.queryName.toLowerCase(Locale.getDefault()).contains(lower)) {
+                String q = safeLower(c.queryName);
+                String d = safeLower(c.displayName);
+
+                // ✅ 中英文都支持：queryName / displayName 任意命中都行
+                if (q.contains(lower) || d.contains(lower)) {
                     displayList.add(c);
                 }
             }
         }
+
         notifyDataSetChanged();
+        if (filteredListener != null) {
+            filteredListener.onFiltered(displayList.size(), key);
+        }
+    }
+
+    private String safeLower(String s) {
+        if (s == null) return "";
+        return s.toLowerCase(Locale.getDefault());
     }
 
     @NonNull
@@ -73,24 +98,35 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
 
     static class CityViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView tvCityName;
-        private final TextView tvCitySub;
+        private final TextView tvCityDisplay;
+        private final TextView tvCityQuery;
+        private final TextView tvBadge;
 
         public CityViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvCityName = itemView.findViewById(R.id.tvCityNameItem);
-            tvCitySub = itemView.findViewById(R.id.tvCitySub);
+            tvCityDisplay = itemView.findViewById(R.id.tvCityDisplay);
+            tvCityQuery = itemView.findViewById(R.id.tvCityQuery);
+            tvBadge = itemView.findViewById(R.id.tvBadge);
         }
 
         public void bind(CityEntity city, OnCityClickListener listener) {
-            tvCityName.setText(city.displayName);
-            // 如果你以后想加拼音/国家等信息，可以显示在 tvCitySub
-            tvCitySub.setVisibility(View.GONE);
+            tvCityDisplay.setText(city.displayName);
+            tvCityQuery.setText(city.queryName);
+
+            // ✅ 当前城市 badge（CityEntity 里一般是 isCurrent / current）
+            boolean isCurrent = false;
+            try {
+                // 兼容你字段名：如果是 public boolean isCurrent;
+                isCurrent = city.isCurrent;
+            } catch (Throwable ignore) {
+                // 如果你字段叫 current（int/boolean），你在这里按实际改一行即可
+                // isCurrent = city.current;
+            }
+
+            tvBadge.setVisibility(isCurrent ? View.VISIBLE : View.GONE);
 
             itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onCityClick(city);
-                }
+                if (listener != null) listener.onCityClick(city);
             });
         }
     }

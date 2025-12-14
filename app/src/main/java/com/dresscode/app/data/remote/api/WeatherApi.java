@@ -13,7 +13,8 @@ public interface WeatherApi {
     Call<WeatherResponse> getCurrentWeather(
             @Query("q") String cityName,
             @Query("appid") String apiKey,
-            @Query("units") String units   // 传 "metric"
+            @Query("units") String units,
+            @Query("lang") String lang
     );
 
     @GET("weather")
@@ -21,6 +22,7 @@ public interface WeatherApi {
             @Query("lat") double lat,
             @Query("lon") double lon,
             @Query("appid") String apiKey,
-            @Query("units") String units
+            @Query("units") String units,
+            @Query("lang") String lang
     );
 }

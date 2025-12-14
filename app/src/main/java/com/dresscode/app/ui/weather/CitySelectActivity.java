@@ -3,6 +3,7 @@ package com.dresscode.app.ui.weather;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -23,56 +24,78 @@ public class CitySelectActivity extends AppCompatActivity {
 
     private WeatherViewModel weatherViewModel;
     private CityAdapter adapter;
+    private List<CityEntity> recentCities = new ArrayList<>();
+    private List<CityEntity> allCities = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city_select);
 
-        // ViewModel
         weatherViewModel = new ViewModelProvider(
                 this,
                 new ViewModelProvider.AndroidViewModelFactory(getApplication())
         ).get(WeatherViewModel.class);
 
-        ImageButton btnBack = findViewById(R.id.btnBack);
+        com.google.android.material.appbar.MaterialToolbar topAppBar = findViewById(R.id.topAppBar);
+        ImageButton btnClear = findViewById(R.id.btnClear);
+        View emptyView = findViewById(R.id.emptyView);
         EditText etSearch = findViewById(R.id.etSearch);
         RecyclerView rvCityList = findViewById(R.id.rvCityList);
 
-        // RecyclerView 设置
+        topAppBar.setNavigationOnClickListener(v -> finish());
+        btnClear.setOnClickListener(v -> etSearch.setText(""));
+
+        // ✅ 1) 先创建 adapter（否则下面 setOnFilteredListener 会 NPE）
         adapter = new CityAdapter(city -> {
-            // 确保写入数据库
             weatherViewModel.insertCityIfNotExists(city);
-            // 设为当前城市
             weatherViewModel.setCurrentCity(city);
-            // 关闭页面
             finish();
         });
+
+        // ✅ 2) 再绑定 filtered listener
+        adapter.setOnFilteredListener((shownCount, keyword) -> {
+            if (keyword != null && !keyword.trim().isEmpty() && shownCount == 0) {
+                emptyView.setVisibility(View.VISIBLE);
+            } else {
+                emptyView.setVisibility(View.GONE);
+            }
+        });
+
         rvCityList.setLayoutManager(new LinearLayoutManager(this));
         rvCityList.setAdapter(adapter);
 
-        // ✅ 关键点：先把内置城市全部写入数据库（不会重复）
-        initBuiltInCitiesOnce();
-
-        // 然后永远监听 DB 里的城市列表
-        weatherViewModel.getCityList().observe(this, cities -> {
-            if (cities != null) {
-                adapter.setData(cities);
-            }
-        });
-
-        // 返回按钮
-        btnBack.setOnClickListener(v -> finish());
-
-        // 搜索框监听
+        // ✅ 3) 只保留一个 TextWatcher（不要重复 add）
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.filter(s.toString());
+                String key = s == null ? "" : s.toString();
+                btnClear.setVisibility(key.trim().isEmpty() ? View.GONE : View.VISIBLE);
+                adapter.filter(key);
             }
             @Override public void afterTextChanged(Editable s) {}
         });
+
+        initBuiltInCitiesOnce();
+
+        weatherViewModel.getRecentCityList().observe(this, cities -> {
+            adapter.setData(cities);
+            emptyView.setVisibility(View.GONE);
+        });
+
+        weatherViewModel.getRecentCityList().observe(this, list -> {
+            recentCities.clear();
+            if (list != null) recentCities.addAll(list);
+            mergeAndShow();
+        });
+
+        weatherViewModel.getCityList().observe(this, list -> {
+            allCities.clear();
+            if (list != null) allCities.addAll(list);
+            mergeAndShow();
+        });
     }
+
 
     /** 每次进页面都跑一遍没关系，Repository 里会检查是否已存在 */
     private void initBuiltInCitiesOnce() {
@@ -117,4 +140,33 @@ public class CitySelectActivity extends AppCompatActivity {
 
         return list;
     }
+
+    private void mergeAndShow() {
+        List<CityEntity> merged = new ArrayList<>();
+
+        // 1. 先加最近使用过的
+        for (CityEntity c : recentCities) {
+            merged.add(c);
+        }
+
+        // 2. 不足 20，用全量城市补（按 queryName 去重）
+        if (merged.size() < 20) {
+            for (CityEntity c : allCities) {
+                if (merged.size() >= 20) break;
+                boolean exists = false;
+                for (CityEntity e : merged) {
+                    if (e.queryName.equalsIgnoreCase(c.queryName)) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    merged.add(c);
+                }
+            }
+        }
+
+        adapter.setData(merged);
+    }
+
 }

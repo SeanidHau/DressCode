@@ -16,6 +16,9 @@ public interface SearchHistoryDao {
     @Query("SELECT * FROM search_history ORDER BY time DESC LIMIT 10")
     LiveData<List<SearchHistoryEntity>> getRecent();
 
+    @Query("SELECT * FROM search_history ORDER BY time DESC LIMIT 20")
+    LiveData<List<SearchHistoryEntity>> getRecent20();
+
     // ✅ 同关键词去重：先删掉旧的
     @Query("DELETE FROM search_history WHERE keyword = :keyword")
     void deleteByKeyword(String keyword);

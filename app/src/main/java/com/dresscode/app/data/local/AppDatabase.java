@@ -37,7 +37,7 @@ import com.dresscode.app.data.local.entity.UserProfileEntity;
                 // 设置模块
                 UserProfileEntity.class
         },
-        version = 4,   // ⚠️版本号必须更新
+        version = 6,   // ⚠️版本号必须更新
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {

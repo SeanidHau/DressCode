@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import com.dresscode.app.data.local.entity.CityEntity;
 import com.dresscode.app.data.local.entity.WeatherCacheEntity;
@@ -19,7 +20,9 @@ public class WeatherViewModel extends AndroidViewModel {
 
     private final LiveData<CityEntity> currentCity;
     private final LiveData<List<CityEntity>> cityList;
-    private LiveData<WeatherCacheEntity> currentWeather;
+
+    private final MutableLiveData<Integer> currentCityId = new MutableLiveData<>();
+    private final LiveData<WeatherCacheEntity> currentWeather;
 
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>(null);
@@ -29,6 +32,12 @@ public class WeatherViewModel extends AndroidViewModel {
         repository = WeatherRepository.getInstance(application);
         currentCity = repository.getCurrentCity();
         cityList = repository.getAllCities();
+
+        // ✅ 关键：在构造函数里初始化，避免 repository 未初始化问题
+        currentWeather = Transformations.switchMap(
+                currentCityId,
+                cityId -> repository.getWeatherForCity(cityId)
+        );
     }
 
     public LiveData<CityEntity> getCurrentCity() {
@@ -53,7 +62,7 @@ public class WeatherViewModel extends AndroidViewModel {
 
     /** 切换当前城市时调用 */
     public void observeWeatherForCity(int cityId) {
-        currentWeather = repository.getWeatherForCity(cityId);
+        currentCityId.setValue(cityId);
     }
 
     public void insertCityIfNotExists(CityEntity city) {
@@ -75,14 +84,24 @@ public class WeatherViewModel extends AndroidViewModel {
     }
 
     public void updateCityByLocation(double lat, double lon) {
+        loading.setValue(true);
+        error.setValue(null);
         repository.updateCityByLocation(
                 lat, lon,
                 () -> loading.postValue(false),
-                () -> error.postValue("定位获取天气失败")
+                () -> {
+                    loading.postValue(false);
+                    error.postValue("定位获取天气失败");
+                }
         );
     }
 
     public void setCurrentCity(CityEntity city) {
         repository.setCurrentCity(city);
     }
+
+    public LiveData<List<CityEntity>> getRecentCityList() {
+        return repository.getRecentCities();
+    }
+
 }
