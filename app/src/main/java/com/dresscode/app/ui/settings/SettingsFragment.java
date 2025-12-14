@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -53,6 +54,16 @@ public class SettingsFragment extends Fragment {
 
     private ArrayAdapter<CharSequence> styleAdapter;
     private ArrayAdapter<CharSequence> seasonAdapter;
+    private boolean isEditMode = false;
+
+    private View rowNicknameView, rowGenderView, rowStyleView, rowSeasonView;
+    private View layoutNicknameEdit;
+    private TextView tvNicknameValue, tvGenderValue, tvStyleValue, tvSeasonValue;
+    private Button btnEditSettings;
+    private TextView tvStatus;
+
+    private final android.os.Handler uiHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable hideStatusRunnable;
 
     @Nullable
     @Override
@@ -84,6 +95,21 @@ public class SettingsFragment extends Fragment {
 
         // 退出登录按钮
         btnLogout = v.findViewById(R.id.btnLogout);
+        rowNicknameView = v.findViewById(R.id.rowNicknameView);
+        rowGenderView = v.findViewById(R.id.rowGenderView);
+        rowStyleView = v.findViewById(R.id.rowStyleView);
+        rowSeasonView = v.findViewById(R.id.rowSeasonView);
+
+        layoutNicknameEdit = v.findViewById(R.id.layoutNicknameEdit);
+
+        tvNicknameValue = v.findViewById(R.id.tvNicknameValue);
+        tvGenderValue = v.findViewById(R.id.tvGenderValue);
+        tvStyleValue = v.findViewById(R.id.tvStyleValue);
+        tvSeasonValue = v.findViewById(R.id.tvSeasonValue);
+
+        btnEditSettings = v.findViewById(R.id.btnEditSettings);
+
+        tvStatus = v.findViewById(R.id.tvStatus);
 
         // Spinner 适配器
         styleAdapter = ArrayAdapter.createFromResource(
@@ -116,6 +142,12 @@ public class SettingsFragment extends Fragment {
 
         // 从 SharedPreferences 读取昵称 / 深色模式
         loadProfileFromPreferences();
+
+        setEditMode(false);
+
+        btnEditSettings.setOnClickListener(v -> {
+            setEditMode(true);
+        });
 
         // 读取本地已保存设置（性别、默认筛选）
         viewModel.loadSettings(requireContext());
@@ -181,13 +213,14 @@ public class SettingsFragment extends Fragment {
         // 清除缓存
         btnClearCache.setOnClickListener(v1 -> {
             clearAppCache(requireContext());
-            Toast.makeText(requireContext(), "缓存已清除", Toast.LENGTH_SHORT).show();
+            showStatus("缓存已清除");
         });
 
         // 保存按钮：保存 ViewModel 设置 + 昵称 + 深色模式 + 写入 Room
         btnSaveSettings.setOnClickListener(v -> {
             saveAllSettings();
-            Toast.makeText(requireContext(), "设置已保存", Toast.LENGTH_SHORT).show();
+            setEditMode(false);
+            showStatus("设置已保存");
         });
 
         btnLogout.setOnClickListener(v -> {
@@ -240,6 +273,18 @@ public class SettingsFragment extends Fragment {
                 spinnerDefaultSeason.setSelection(index);
             }
         }
+
+        // 同步到只读展示
+        tvStyleValue.setText(settings.getDefaultStyle() != null ? settings.getDefaultStyle() : "不过滤");
+        tvSeasonValue.setText(settings.getDefaultSeason() != null ? settings.getDefaultSeason() : "不过滤");
+
+        String genderText;
+        switch (settings.getGender()) {
+            case UserSettings.GENDER_MALE: genderText = "男"; break;
+            case UserSettings.GENDER_FEMALE: genderText = "女"; break;
+            default: genderText = "未设置"; break;
+        }
+        tvGenderValue.setText(genderText);
     }
 
     /**
@@ -252,6 +297,8 @@ public class SettingsFragment extends Fragment {
 
         boolean darkMode = PreferenceUtils.getBoolean(ctx, PreferenceUtils.KEY_DARK_MODE, false);
         switchDarkMode.setChecked(darkMode);
+
+        tvNicknameValue.setText(nickname.isEmpty() ? "未设置" : nickname);
     }
 
     /**
@@ -306,5 +353,47 @@ public class SettingsFragment extends Fragment {
             }
         }
         return dir != null && dir.delete();
+    }
+
+    private void setEditMode(boolean edit) {
+        isEditMode = edit;
+
+        // 按钮显隐
+        btnEditSettings.setVisibility(edit ? View.GONE : View.VISIBLE);
+        btnSaveSettings.setVisibility(edit ? View.VISIBLE : View.GONE);
+
+        // 昵称：只读行 vs 编辑框
+        rowNicknameView.setVisibility(edit ? View.GONE : View.VISIBLE);
+        layoutNicknameEdit.setVisibility(edit ? View.VISIBLE : View.GONE);
+
+        // 性别：只读行 vs 单选
+        rowGenderView.setVisibility(edit ? View.GONE : View.VISIBLE);
+        rgGender.setVisibility(edit ? View.VISIBLE : View.GONE);
+
+        // 默认筛选：只读行 vs Spinner
+        rowStyleView.setVisibility(edit ? View.GONE : View.VISIBLE);
+        spinnerDefaultStyle.setVisibility(edit ? View.VISIBLE : View.GONE);
+
+        rowSeasonView.setVisibility(edit ? View.GONE : View.VISIBLE);
+        spinnerDefaultSeason.setVisibility(edit ? View.VISIBLE : View.GONE);
+    }
+
+    private void showStatus(@Nullable String msg) {
+        if (tvStatus == null) return;
+
+        if (msg == null || msg.trim().isEmpty()) {
+            tvStatus.setVisibility(View.GONE);
+            return;
+        }
+
+        tvStatus.setText(msg);
+        tvStatus.setVisibility(View.VISIBLE);
+
+        // 2.2 秒后自动淡出/隐藏（克制，不打断）
+        if (hideStatusRunnable != null) uiHandler.removeCallbacks(hideStatusRunnable);
+        hideStatusRunnable = () -> {
+            if (tvStatus != null) tvStatus.setVisibility(View.GONE);
+        };
+        uiHandler.postDelayed(hideStatusRunnable, 2200);
     }
 }

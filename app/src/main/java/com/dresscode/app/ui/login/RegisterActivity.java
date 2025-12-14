@@ -1,7 +1,16 @@
 package com.dresscode.app.ui.login;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -10,7 +19,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.dresscode.app.R;
@@ -32,6 +43,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         RegisterViewModelFactory factory = new RegisterViewModelFactory(getApplicationContext());
         viewModel = new ViewModelProvider(this, factory).get(RegisterViewModel.class);
+
+        TextView tvGoLogin = findViewById(R.id.tvGoLogin);
+        setupGoLogin(tvGoLogin);
 
         initViews();
         initEvents();
@@ -112,4 +126,48 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    private void setupGoLogin(TextView tv) {
+        String fullText = "已有账号？返回登录";
+        String actionText = "返回登录";
+
+        SpannableString span = new SpannableString(fullText);
+        int start = fullText.indexOf(actionText);
+        int end = start + actionText.length();
+
+        span.setSpan(
+                new ForegroundColorSpan(
+                        ContextCompat.getColor(this, R.color.dc_text_primary)
+                ),
+                start, end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+
+        span.setSpan(
+                new UnderlineSpan(),
+                start, end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+
+        span.setSpan(
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(@NonNull View widget) {
+                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                        finish();
+                    }
+
+                    @Override
+                    public void updateDrawState(@NonNull TextPaint ds) {
+                        ds.setUnderlineText(true);
+                        ds.setColor(ContextCompat.getColor(RegisterActivity.this, R.color.dc_text_primary));
+                    }
+                },
+                start, end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+
+        tv.setText(span);
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+        tv.setHighlightColor(Color.TRANSPARENT);
+    }
 }

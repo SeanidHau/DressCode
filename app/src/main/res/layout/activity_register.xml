@@ -1,81 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:background="@color/dc_background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="28dp"
+        android:paddingBottom="24dp"
+        android:gravity="center_vertical">
 
         <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvBrand"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="注册 DressCode"
-            android:textSize="24sp"
+            android:text="DressCode"
+            android:textSize="26sp"
             android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:paddingBottom="24dp"/>
+            android:textColor="@color/dc_text_primary" />
 
-        <EditText
-            android:id="@+id/etNickname"
+        <TextView
+            android:id="@+id/tvSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="昵称"
-            android:singleLine="true"
-            android:imeOptions="actionNext"
-            android:padding="12dp"/>
+            android:layout_marginTop="6dp"
+            android:text="创建账号，保存你的设置与历史"
+            android:textSize="13sp"
+            android:textColor="@color/dc_text_secondary" />
 
-        <EditText
-            android:id="@+id/etEmail"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="邮箱"
-            android:inputType="textEmailAddress"
-            android:singleLine="true"
-            android:imeOptions="actionNext"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"/>
+            android:layout_marginTop="22dp"
+            android:hint="昵称">
 
-        <EditText
-            android:id="@+id/etPassword"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:maxLines="1"
+                android:textColor="@color/dc_text_primary" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="邮箱">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:imeOptions="actionNext"
+                android:maxLines="1"
+                android:textColor="@color/dc_text_primary" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:hint="密码"
-            android:inputType="textPassword"
-            android:singleLine="true"
-            android:imeOptions="actionNext"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"/>
+            app:endIconMode="password_toggle">
 
-        <EditText
-            android:id="@+id/etConfirmPassword"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:imeOptions="actionNext"
+                android:maxLines="1"
+                android:textColor="@color/dc_text_primary" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilConfirmPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:hint="确认密码"
-            android:inputType="textPassword"
-            android:singleLine="true"
-            android:imeOptions="actionDone"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"/>
+            app:endIconMode="password_toggle">
 
-        <Button
-            android:id="@+id/btnRegister"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:imeOptions="actionDone"
+                android:maxLines="1"
+                android:textColor="@color/dc_text_primary" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- 页面内状态提示（替代 Toast） -->
+        <TextView
+            android:id="@+id/tvStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="注册"
-            android:layout_marginTop="24dp"/>
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            android:text="状态提示"
+            android:textSize="12sp"
+            android:textColor="@color/dc_text_secondary" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRegister"
+            style="@style/Widget.DressCode.Button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="18dp"
+            android:text="注册" />
+
+        <!-- 底部：点击返回登录 -->
         <TextView
             android:id="@+id/tvGoLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="已有账号？返回登录"
-            android:textSize="14sp"
             android:layout_marginTop="16dp"
-            android:layout_gravity="center_horizontal"/>
-
+            android:layout_gravity="center_horizontal"
+            android:text="已有账号？返回登录"
+            android:textSize="13sp"
+            android:textColor="@color/dc_text_secondary"
+            android:padding="8dp" />
     </LinearLayout>
-</ScrollView>
+
+</androidx.core.widget.NestedScrollView>

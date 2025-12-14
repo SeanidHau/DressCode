@@ -1,155 +1,389 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/dc_background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="24dp">
 
-        <!-- 标题：个人设置 -->
         <TextView
             android:id="@+id/tvSettingsTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="个人设置"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:paddingBottom="16dp" />
-
-        <!-- 昵称设置 -->
-        <TextView
-            android:id="@+id/tvNicknameLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="昵称"
-            android:textSize="16sp"
-            android:paddingBottom="4dp" />
-
-        <EditText
-            android:id="@+id/etNickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="请输入你的昵称"
-            android:maxLines="1"
-            android:singleLine="true" />
-
-        <!-- 性别设置 -->
-        <TextView
-            android:id="@+id/tvGenderTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="性别设置"
-            android:textSize="16sp"
+            android:text="设置"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp" />
+            android:textColor="@color/dc_text_primary"
+            android:paddingTop="6dp"
+            android:paddingBottom="12dp" />
 
-        <RadioGroup
-            android:id="@+id/rgGender"
+        <!-- 个人信息 -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/dc_divider"
+            android:backgroundTint="@color/dc_surface">
 
-            <RadioButton
-                android:id="@+id/rbGenderUnknown"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="未设置" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <RadioButton
-                android:id="@+id/rbGenderMale"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="个人信息"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/dc_text_primary" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="默认处于只读状态，点击“更改设置”后可编辑"
+                    android:textSize="12sp"
+                    android:textColor="@color/dc_text_secondary" />
+
+                <!-- 昵称：只读行 -->
+                <LinearLayout
+                    android:id="@+id/rowNicknameView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="昵称"
+                        android:textSize="13sp"
+                        android:textColor="@color/dc_text_secondary" />
+
+                    <TextView
+                        android:id="@+id/tvNicknameValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="—"
+                        android:textSize="16sp"
+                        android:textColor="@color/dc_text_primary"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/dc_divider" />
+                </LinearLayout>
+
+                <!-- 昵称：编辑控件（默认隐藏） -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutNicknameEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone"
+                    app:boxBackgroundMode="outline"
+                    app:boxStrokeColor="@color/dc_divider"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etNickname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="请输入你的昵称"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:textColor="@color/dc_text_primary"
+                        android:textColorHint="@color/dc_text_hint"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- 性别：只读行 -->
+                <LinearLayout
+                    android:id="@+id/rowGenderView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="性别"
+                        android:textSize="13sp"
+                        android:textColor="@color/dc_text_secondary" />
+
+                    <TextView
+                        android:id="@+id/tvGenderValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="—"
+                        android:textSize="16sp"
+                        android:textColor="@color/dc_text_primary"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp" />
+                </LinearLayout>
+
+                <!-- 性别：编辑控件（默认隐藏） -->
+                <RadioGroup
+                    android:id="@+id/rgGender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rbGenderUnknown"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="未设置"
+                        android:textColor="@color/dc_text_primary" />
+
+                    <RadioButton
+                        android:id="@+id/rbGenderMale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="18dp"
+                        android:text="男"
+                        android:textColor="@color/dc_text_primary" />
+
+                    <RadioButton
+                        android:id="@+id/rbGenderFemale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="18dp"
+                        android:text="女"
+                        android:textColor="@color/dc_text_primary" />
+                </RadioGroup>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 默认筛选 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/dc_divider"
+            android:backgroundTint="@color/dc_surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="男"
-                android:layout_marginStart="16dp" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <RadioButton
-                android:id="@+id/rbGenderFemale"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="女"
-                android:layout_marginStart="16dp" />
-        </RadioGroup>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="默认筛选"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/dc_text_primary" />
 
-        <!-- 默认筛选设置 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="影响“发现穿搭”的默认推荐偏好"
+                    android:textSize="12sp"
+                    android:textColor="@color/dc_text_secondary" />
+
+                <!-- 风格：只读行 -->
+                <LinearLayout
+                    android:id="@+id/rowStyleView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="默认风格"
+                        android:textSize="13sp"
+                        android:textColor="@color/dc_text_secondary" />
+
+                    <TextView
+                        android:id="@+id/tvStyleValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="—"
+                        android:textSize="16sp"
+                        android:textColor="@color/dc_text_primary"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/dc_divider" />
+                </LinearLayout>
+
+                <!-- 风格：编辑控件 -->
+                <Spinner
+                    android:id="@+id/spinnerDefaultStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone" />
+
+                <!-- 季节：只读行 -->
+                <LinearLayout
+                    android:id="@+id/rowSeasonView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="默认季节"
+                        android:textSize="13sp"
+                        android:textColor="@color/dc_text_secondary" />
+
+                    <TextView
+                        android:id="@+id/tvSeasonValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="—"
+                        android:textSize="16sp"
+                        android:textColor="@color/dc_text_primary"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp" />
+                </LinearLayout>
+
+                <!-- 季节：编辑控件 -->
+                <Spinner
+                    android:id="@+id/spinnerDefaultSeason"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 操作按钮：更改 / 保存（放在外观与存储上面） -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditSettings"
+            style="@style/Widget.DressCode.Button"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="更改设置" />
+
         <TextView
-            android:id="@+id/tvDefaultFilterTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="默认筛选展示"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp" />
-
-        <!-- 默认风格 -->
-        <TextView
-            android:id="@+id/tvDefaultStyleLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="默认风格" />
-
-        <Spinner
-            android:id="@+id/spinnerDefaultStyle"
+            android:id="@+id/tvStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="12dp"
+            android:padding="12dp"
+            android:background="@color/dc_surface"
+            android:textColor="@color/dc_text_secondary"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:text="状态提示" />
 
-        <!-- 默认季节 -->
-        <TextView
-            android:id="@+id/tvDefaultSeasonLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="默认季节"
-            android:layout_marginTop="12dp" />
-
-        <Spinner
-            android:id="@+id/spinnerDefaultSeason"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp" />
-
-        <!-- 主题 / 深色模式 / 清除缓存 -->
-        <TextView
-            android:id="@+id/tvAppearanceTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="外观与缓存"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:paddingTop="24dp"
-            android:paddingBottom="8dp" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switchDarkMode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="深色模式" />
-
-        <Button
-            android:id="@+id/btnClearCache"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="清除缓存"
-            android:layout_marginTop="8dp" />
-
-        <!-- 保存按钮 -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveSettings"
+            style="@style/Widget.DressCode.Button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
             android:text="保存设置"
-            android:layout_marginTop="24dp" />
+            android:visibility="gone" />
 
-        <Button
-            android:id="@+id/btnLogout"
+        <!-- 外观与存储（不依赖保存设置） -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="退出登录"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/dc_divider"
+            android:backgroundTint="@color/dc_surface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="外观与存储"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/dc_text_primary" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="主题与缓存管理（即时生效）"
+                    android:textSize="12sp"
+                    android:textColor="@color/dc_text_secondary" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchDarkMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="深色模式"
+                    android:textColor="@color/dc_text_primary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnClearCache"
+                    style="@style/Widget.DressCode.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="12dp"
+                    android:text="清除缓存" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogout"
+            style="@style/Widget.DressCode.Button"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:text="退出登录" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="32dp" />
 
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
