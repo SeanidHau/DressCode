@@ -40,6 +40,7 @@ public class DressingFragment extends Fragment {
     private RecyclerView rvFavorites;
     private Button btnPick, btnCamera, btnDressing;
     private TextView tvLoading;
+    private TextView tvFavoritesEmpty;
 
     private DressingViewModel viewModel;
     private FavoriteOutfitAdapter favoriteAdapter;
@@ -48,13 +49,15 @@ public class DressingFragment extends Fragment {
     private OutfitEntity selectedOutfit;
 
     private ActivityResultLauncher<Intent> pickLauncher;
-    private ActivityResultLauncher<Intent> cameraLauncher;
-    private androidx.activity.result.ActivityResultLauncher<Uri> takePictureLauncher;
+    private ActivityResultLauncher<Uri> takePictureLauncher;
     private Uri cameraImageUri;
+    private TextView btnManageFavorites;
+    private View manageBar;
+    private TextView tvManageCount;
+    private Button btnUnfavorite, btnDoneManage;
 
     private static final int REQUEST_CAMERA_PERMISSION = 2001;
-
-    public DressingFragment() {}
+    private boolean navigating = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -76,6 +79,13 @@ public class DressingFragment extends Fragment {
         btnCamera = v.findViewById(R.id.btnTakePhoto);
         btnDressing = v.findViewById(R.id.btnDressing);
         tvLoading = v.findViewById(R.id.tvLoading);
+        tvFavoritesEmpty = v.findViewById(R.id.tvFavoritesEmpty);
+        btnManageFavorites = v.findViewById(R.id.btnManageFavorites);
+        manageBar = v.findViewById(R.id.manageBar);
+        tvManageCount = v.findViewById(R.id.tvManageCount);
+        btnUnfavorite = v.findViewById(R.id.btnUnfavorite);
+        btnDoneManage = v.findViewById(R.id.btnDoneManage);
+
     }
 
     private void initViewModel() {
@@ -86,27 +96,24 @@ public class DressingFragment extends Fragment {
         pickLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         selectedPhotoUri = result.getData().getData();
                         Glide.with(requireContext())
                                 .load(selectedPhotoUri)
                                 .into(ivUserPhoto);
+                        clearStatus();
                     }
                 });
 
         takePictureLauncher = registerForActivityResult(
                 new ActivityResultContracts.TakePicture(),
-                isSuccess -> {
-                    if (isSuccess != null && isSuccess) {
-                        // 使用我们预先创建的 Uri
+                success -> {
+                    if (Boolean.TRUE.equals(success) && cameraImageUri != null) {
                         selectedPhotoUri = cameraImageUri;
-                        if (selectedPhotoUri != null) {
-                            Glide.with(requireContext())
-                                    .load(selectedPhotoUri)
-                                    .into(ivUserPhoto);
-                        }
-                    } else {
-                        // 用户取消或者失败，不用弹「无法创建」那种误导性的提示
+                        Glide.with(requireContext())
+                                .load(selectedPhotoUri)
+                                .into(ivUserPhoto);
+                        clearStatus();
                     }
                 });
     }
@@ -114,73 +121,154 @@ public class DressingFragment extends Fragment {
     private void setupFavoriteList() {
         rvFavorites.setLayoutManager(
                 new androidx.recyclerview.widget.LinearLayoutManager(
-                        getContext(),
-                        RecyclerView.HORIZONTAL,
-                        false
+                        requireContext(), RecyclerView.HORIZONTAL, false
                 )
         );
+
+        // ① 先初始化 adapter（别漏）
         favoriteAdapter = new FavoriteOutfitAdapter(outfit -> {
+            // 普通点击：选中一套穿搭（用于换装）
             selectedOutfit = outfit;
             favoriteAdapter.setSelectedId(outfit.id);
         });
+
+        // ② 再绑定“管理模式”的勾选计数回调
+        favoriteAdapter.setOnCheckedChangeListener(count -> {
+            tvManageCount.setText("已选 " + count);
+            btnUnfavorite.setEnabled(count > 0);
+        });
+
+        // ③ 最后 setAdapter
         rvFavorites.setAdapter(favoriteAdapter);
     }
+
 
     private void setupListeners() {
         btnPick.setOnClickListener(v -> pickImageFromGallery());
         btnCamera.setOnClickListener(v -> takePhotoWithCamera());
+
         btnDressing.setOnClickListener(v -> {
+            navigating = false; // ✅ 每次生成前重置
+
             if (selectedPhotoUri == null) {
-                Toast.makeText(getContext(), "请先选择或拍摄一张照片", Toast.LENGTH_SHORT).show();
+                showStatus("请先选择或拍摄一张照片");
                 return;
             }
             if (selectedOutfit == null) {
-                Toast.makeText(getContext(), "请先选择一套收藏穿搭", Toast.LENGTH_SHORT).show();
+                showStatus("请选择一套收藏穿搭");
                 return;
             }
             viewModel.startDressing(requireContext(), selectedPhotoUri, selectedOutfit.id);
         });
+
+
+        btnManageFavorites.setOnClickListener(v -> {
+            boolean toManage = !favoriteAdapter.isManageMode();
+            favoriteAdapter.setManageMode(toManage);
+            manageBar.setVisibility(toManage ? View.VISIBLE : View.GONE);
+            btnManageFavorites.setText(toManage ? "取消" : "管理");
+
+            // 进入管理模式时，不再影响“用于换装”的 selectedOutfit
+        });
+
+        btnDoneManage.setOnClickListener(v -> {
+            favoriteAdapter.setManageMode(false);
+            manageBar.setVisibility(View.GONE);
+            btnManageFavorites.setText("管理");
+        });
+
+        btnUnfavorite.setOnClickListener(v -> {
+            List<Integer> ids = favoriteAdapter.getCheckedIds();
+            if (ids == null || ids.isEmpty()) return;
+
+            viewModel.unfavoriteOutfits(ids);
+
+            // UI 退出管理态（删除完成后列表会通过 LiveData 刷新）
+            favoriteAdapter.clearChecked();
+            favoriteAdapter.setManageMode(false);
+            manageBar.setVisibility(View.GONE);
+            btnManageFavorites.setText("管理");
+        });
     }
 
     private void observeViewModel() {
-        viewModel.getFavoriteList().observe(getViewLifecycleOwner(), this::onFavoriteListChanged);
-        viewModel.getLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            if (isLoading != null && isLoading) {
-                tvLoading.setVisibility(View.VISIBLE);
-                btnDressing.setEnabled(false);
-            } else {
-                tvLoading.setVisibility(View.GONE);
-                btnDressing.setEnabled(true);
-            }
-        });
-        viewModel.getDressingResult().observe(getViewLifecycleOwner(), url -> {
-            if (url != null) {
-                Intent intent = new Intent(getContext(), DressingResultActivity.class);
-                intent.putExtra(DressingResultActivity.EXTRA_RESULT_URL, url);
-                startActivity(intent);
-            }
-        });
-        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), msg -> {
-            if (msg != null && !msg.isEmpty()) {
-                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+        viewModel.getFavoriteList().observe(
+                getViewLifecycleOwner(),
+                outfits -> {
+                    favoriteAdapter.submitList(outfits);
+                    tvFavoritesEmpty.setVisibility(
+                            outfits == null || outfits.isEmpty()
+                                    ? View.VISIBLE
+                                    : View.GONE
+                    );
+                }
+        );
 
-    private void onFavoriteListChanged(List<OutfitEntity> outfits) {
-        favoriteAdapter.submitList(outfits);
+        viewModel.getLoading().observe(
+                getViewLifecycleOwner(),
+                loading -> {
+                    if (Boolean.TRUE.equals(loading)) {
+                        showStatus("正在生成换装效果…");
+                        btnDressing.setEnabled(false);
+                    } else {
+                        clearStatus();
+                        btnDressing.setEnabled(true);
+                    }
+                }
+        );
+
+        viewModel.getDressingResult().observe(
+                getViewLifecycleOwner(),
+                url -> {
+                    if (url == null) return;
+
+                    url = url.trim();
+                    if (url.isEmpty()) return;
+
+                    // ✅ 防止 LiveData 重放 / 多次回调导致重复 startActivity
+                    if (navigating) return;
+                    navigating = true;
+
+                    // ✅ 先消费掉，避免页面重建/返回再次触发
+                    viewModel.consumeDressingResult();
+
+                    // ✅ Fragment 不在有效状态就不跳
+                    if (!isAdded() || getActivity() == null || getActivity().isFinishing()) return;
+
+                    Intent intent = new Intent(requireContext(), DressingResultActivity.class);
+                    intent.putExtra(DressingResultActivity.EXTRA_RESULT_URL, url);
+                    startActivity(intent);
+                }
+        );
+
+
+        viewModel.getErrorMessage().observe(
+                getViewLifecycleOwner(),
+                msg -> {
+                    if (msg != null && !msg.trim().isEmpty()) {
+                        showStatus(msg);
+                        btnDressing.setEnabled(true);
+                    }
+                }
+        );
     }
 
     private void pickImageFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         pickLauncher.launch(intent);
     }
 
     private void takePhotoWithCamera() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            requestPermissions(
+                    new String[]{Manifest.permission.CAMERA},
+                    REQUEST_CAMERA_PERMISSION
+            );
         } else {
             launchCamera();
         }
@@ -188,13 +276,11 @@ public class DressingFragment extends Fragment {
 
     private void launchCamera() {
         try {
-            // 让 ViewModel 创建一个用于保存图片的 Uri
-            cameraImageUri = viewModel.createCameraImageUri(requireContext());
-            // 启动系统相机拍照，结果会写入这个 Uri
+            cameraImageUri =
+                    viewModel.createCameraImageUri(requireContext());
             takePictureLauncher.launch(cameraImageUri);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "创建拍照文件失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            showStatus("无法启动相机，请稍后再试");
         }
     }
 
@@ -202,20 +288,24 @@ public class DressingFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (requestCode == REQUEST_CAMERA_PERMISSION) {
-                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        launchCamera();
-                    } else {
-                        Toast.makeText(getContext(), "未授予相机权限", Toast.LENGTH_SHORT).show();
-                    }
-                }
+                launchCamera();
             } else {
-                Toast.makeText(getContext(), "未授予相机权限", Toast.LENGTH_SHORT).show();
+                showStatus("未授予相机权限");
             }
         }
+    }
+
+    /* ---------------- 状态 UI ---------------- */
+
+    private void showStatus(String msg) {
+        tvLoading.setText(msg);
+        tvLoading.setVisibility(View.VISIBLE);
+    }
+
+    private void clearStatus() {
+        tvLoading.setVisibility(View.GONE);
     }
 }

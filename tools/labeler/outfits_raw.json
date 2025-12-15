@@ -1,0 +1,787 @@
+[
+  {
+    "filename": "001.jpg",
+    "tags": {
+      "category": "外套",
+      "clothing_type": "夹克",
+      "gender": "女款",
+      "colors": [
+        "棕色"
+      ],
+      "style": [
+        "休闲",
+        "极简"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "羊毛"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "口袋",
+        "腰带"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "002.jpg",
+    "tags": {
+      "category": "外套",
+      "clothing_type": "夹克",
+      "gender": "男款",
+      "colors": [
+        "灰色",
+        "黑色"
+      ],
+      "style": [
+        "休闲",
+        "极简"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "羊毛"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "拉链",
+        "口袋"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "003.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "毛衣",
+      "gender": "女款",
+      "colors": [
+        "蓝色"
+      ],
+      "style": [
+        "休闲"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "针织"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "纽扣"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "004.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "毛衣",
+      "gender": "男款",
+      "colors": [
+        "灰色"
+      ],
+      "style": [
+        "休闲"
+      ],
+      "patterns": [
+        "条纹"
+      ],
+      "materials": [
+        "针织"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "纽扣"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "005.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "毛衣",
+      "gender": "女款",
+      "colors": [
+        "棕色",
+        "米色"
+      ],
+      "style": [
+        "休闲",
+        "极简"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "针织"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "纽扣",
+        "口袋"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "006.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "毛衣",
+      "gender": "男款",
+      "colors": [
+        "蓝色",
+        "黑色"
+      ],
+      "style": [
+        "休闲"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "针织"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "纽扣",
+        "口袋"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "007.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "毛衣",
+      "gender": "女款",
+      "colors": [
+        "灰色",
+        "红色"
+      ],
+      "style": [
+        "休闲"
+      ],
+      "patterns": [
+        "条纹"
+      ],
+      "materials": [
+        "针织"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "拉链"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "008.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "毛衣",
+      "gender": "男款",
+      "colors": [
+        "灰色",
+        "红色"
+      ],
+      "style": [
+        "休闲"
+      ],
+      "patterns": [
+        "条纹"
+      ],
+      "materials": [
+        "针织"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "拉链"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "009.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "衬衫",
+      "gender": "男款",
+      "colors": [
+        "棕色",
+        "黑色",
+        "白色"
+      ],
+      "style": [
+        "休闲"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "棉"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "纽扣",
+        "拉链",
+        "口袋"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "010.jpg",
+    "tags": {
+      "category": "外套",
+      "clothing_type": "外套",
+      "gender": "男款",
+      "colors": [
+        "灰色",
+        "黑色",
+        "白色"
+      ],
+      "style": [
+        "休闲",
+        "极简"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "羊毛"
+      ],
+      "sleeve_length": "长袖",
+      "length": "过膝",
+      "fit": "宽松",
+      "details": [
+        "纽扣",
+        "口袋"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "011.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "卫衣",
+      "gender": "女款",
+      "colors": [
+        "黑色",
+        "蓝色",
+        "棕色",
+        "米色"
+      ],
+      "style": [
+        "休闲",
+        "街头"
+      ],
+      "patterns": [
+        "格纹"
+      ],
+      "materials": [
+        "针织"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "帽子",
+        "口袋"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "012.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "T恤",
+      "gender": "女款",
+      "colors": [
+        "白色"
+      ],
+      "style": [
+        "休闲",
+        "街头",
+        "极简"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "棉"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "标志"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "013.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "卫衣",
+      "gender": "男款",
+      "colors": [
+        "蓝色"
+      ],
+      "style": [
+        "休闲",
+        "街头"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "棉"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "标志"
+      ],
+      "occasion": [
+        "日常",
+        "户外"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "014.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "卫衣",
+      "gender": "男款",
+      "colors": [
+        "蓝色",
+        "灰色"
+      ],
+      "style": [
+        "休闲",
+        "街头"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "棉"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "拉链",
+        "口袋"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "015.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "卫衣",
+      "gender": "男款",
+      "colors": [
+        "棕色"
+      ],
+      "style": [
+        "休闲",
+        "街头"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "针织"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "帽子",
+        "口袋",
+        "标志"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "016.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "卫衣",
+      "gender": "女款",
+      "colors": [
+        "灰色",
+        "米色"
+      ],
+      "style": [
+        "休闲",
+        "街头"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "棉"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "帽子",
+        "腰带",
+        "标志"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "017.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "毛衣",
+      "gender": "中性",
+      "colors": [
+        "棕色",
+        "米色",
+        "灰色"
+      ],
+      "style": [
+        "休闲",
+        "街头"
+      ],
+      "patterns": [
+        "条纹"
+      ],
+      "materials": [
+        "针织"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "帽子",
+        "口袋"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "018.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "毛衣",
+      "gender": "女款",
+      "colors": [
+        "棕色",
+        "米色",
+        "灰色"
+      ],
+      "style": [
+        "休闲",
+        "街头"
+      ],
+      "patterns": [
+        "条纹"
+      ],
+      "materials": [
+        "针织"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "帽子",
+        "标志"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "019.jpg",
+    "tags": {
+      "category": "外套",
+      "clothing_type": "夹克",
+      "gender": "男款",
+      "colors": [
+        "黄色"
+      ],
+      "style": [
+        "运动",
+        "户外"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "涤纶"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "标准",
+      "details": [
+        "帽子",
+        "拉链",
+        "口袋"
+      ],
+      "occasion": [
+        "日常",
+        "户外"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "020.jpg",
+    "tags": {
+      "category": "外套",
+      "clothing_type": "夹克",
+      "gender": "男款",
+      "colors": [
+        "灰色",
+        "黑色"
+      ],
+      "style": [
+        "休闲",
+        "运动"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "涤纶"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "标准",
+      "details": [
+        "帽子",
+        "拉链",
+        "口袋",
+        "标志"
+      ],
+      "occasion": [
+        "日常",
+        "户外"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "021.jpg",
+    "tags": {
+      "category": "上衣",
+      "clothing_type": "卫衣",
+      "gender": "男款",
+      "colors": [
+        "绿色",
+        "米色"
+      ],
+      "style": [
+        "休闲"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "棉"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "拉链"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "022.jpg",
+    "tags": {
+      "category": "外套",
+      "clothing_type": "夹克",
+      "gender": "男款",
+      "colors": [
+        "灰色"
+      ],
+      "style": [
+        "休闲"
+      ],
+      "patterns": [
+        "格纹"
+      ],
+      "materials": [
+        "羊毛"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "宽松",
+      "details": [
+        "纽扣",
+        "拉链",
+        "口袋"
+      ],
+      "occasion": [
+        "日常"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "023.jpg",
+    "tags": {
+      "category": "外套",
+      "clothing_type": "西装",
+      "gender": "男款",
+      "colors": [
+        "棕色"
+      ],
+      "style": [
+        "正式",
+        "优雅"
+      ],
+      "patterns": [
+        "条纹"
+      ],
+      "materials": [
+        "羊毛"
+      ],
+      "sleeve_length": "长袖",
+      "length": "腰部",
+      "fit": "修身",
+      "details": [
+        "纽扣",
+        "口袋"
+      ],
+      "occasion": [
+        "正式场合"
+      ],
+      "quality": "高"
+    }
+  },
+  {
+    "filename": "024.jpg",
+    "tags": {
+      "category": "外套",
+      "clothing_type": "西装",
+      "gender": "男款",
+      "colors": [
+        "灰色"
+      ],
+      "style": [
+        "正式",
+        "复古"
+      ],
+      "patterns": [
+        "纯色"
+      ],
+      "materials": [
+        "羊毛"
+      ],
+      "sleeve_length": "长袖",
+      "length": "臀部",
+      "fit": "修身",
+      "details": [
+        "纽扣",
+        "口袋",
+        "帽子"
+      ],
+      "occasion": [
+        "正式场合"
+      ],
+      "quality": "高"
+    }
+  }
+]

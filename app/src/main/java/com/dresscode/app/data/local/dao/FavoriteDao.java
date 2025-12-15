@@ -31,4 +31,10 @@ public interface FavoriteDao {
     @Query("SELECT o.* FROM outfits o " +
             "INNER JOIN favorite f ON o.id = f.outfitId")
     List<OutfitEntity> getFavoriteOutfitsWithDetail();
+
+    @Query("DELETE FROM favorite WHERE outfitId IN (:outfitIds)")
+    void deleteByOutfitIds(List<Integer> outfitIds);
+
+    @Query("SELECT * FROM favorite WHERE outfitId IN (:outfitIds)")
+    List<FavoriteEntity> getByOutfitIdsSync(List<Integer> outfitIds);
 }

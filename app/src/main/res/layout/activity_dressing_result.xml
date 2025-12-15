@@ -5,15 +5,30 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <!-- 左上角返回按钮 -->
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Back"
+        android:scaleType="center"
+        android:src="@drawable/ic_arrow_back" />
+
+    <!-- 结果图片 -->
     <ImageView
         android:id="@+id/ivResult"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/btnBack"
         android:layout_above="@+id/btnBar"
+        android:layout_marginTop="8dp"
         android:scaleType="fitCenter"
         android:contentDescription="Dressing Result" />
 
+    <!-- 底部按钮栏 -->
     <LinearLayout
         android:id="@+id/btnBar"
         android:layout_width="match_parent"

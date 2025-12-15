@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardRoot"
+    android:layout_width="260dp"
+    android:layout_height="88dp"
+    android:layout_marginEnd="12dp"
+    android:background="@drawable/bg_fav_outfit_card"
+    android:clipToOutline="true">
+
+    <!-- 真实内容（原来的横向卡片） -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_fav_outfit_card"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/ivCover"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_image_placeholder"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="穿搭标题"
+                android:textColor="@color/dc_text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="风格 · 季节 · 场景"
+                android:textColor="@color/dc_text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 覆盖层：现在是叠加，不参与排版，不会把文字挤掉 -->
+    <View
+        android:id="@+id/manageCheckOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#14000000"
+        android:visibility="gone" />
+
+    <!-- 右上角勾选 -->
+    <TextView
+        android:id="@+id/tvManageCheck"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="end|top"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:text="✓"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:visibility="gone" />
+
+</FrameLayout>

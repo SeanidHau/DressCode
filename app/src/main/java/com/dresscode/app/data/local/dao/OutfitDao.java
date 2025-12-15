@@ -45,4 +45,7 @@ public interface OutfitDao {
             "OR style LIKE :keyword " +
             "OR scene LIKE :keyword")
     LiveData<List<OutfitEntity>> search(String keyword);
+
+    @Query("DELETE FROM outfits")
+    void clearAllOutfits();
 }

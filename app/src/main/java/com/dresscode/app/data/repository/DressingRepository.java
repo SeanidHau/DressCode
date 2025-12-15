@@ -65,6 +65,7 @@ public class DressingRepository {
         File file;
         try {
             file = FileUtils.uriToFile(context, photoUri);
+            android.util.Log.d("DressingRepo", "upload file=" + file.getAbsolutePath() + " size=" + file.length());
         } catch (IOException e) {
             callback.onError("无法读取图片: " + e.getMessage());
             return;
@@ -84,9 +85,20 @@ public class DressingRepository {
                                            @NonNull Response<ResponseBody> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             try {
-                                String url = response.body().string();
-                                callback.onSuccess(url);
+                                String bodyStr = response.body().string();
+
+                                android.util.Log.d(
+                                        "DressingRepo",
+                                        "HTTP " + response.code() + " body head=" +
+                                                (bodyStr.length() > 120
+                                                        ? bodyStr.substring(0, 120)
+                                                        : bodyStr)
+                                );
+
+                                callback.onSuccess(bodyStr);
+
                             } catch (IOException e) {
+                                android.util.Log.e("DressingRepo", "read body failed", e);
                                 callback.onError("解析返回结果失败");
                             }
                         } else {
@@ -95,10 +107,25 @@ public class DressingRepository {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<ResponseBody> call,
-                                          @NonNull Throwable t) {
-                        callback.onError("网络请求失败: " + t.getMessage());
+                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                        android.util.Log.e("DressingRepo", "onFailure", t);
+                        callback.onError("网络请求失败: " + t.getClass().getSimpleName() + " / " + t.getMessage());
                     }
                 });
+    }
+
+    public void unfavoriteOutfits(List<Integer> outfitIds, Runnable onDone, java.util.function.Consumer<String> onError) {
+        executor.execute(() -> {
+            try {
+                if (outfitIds == null || outfitIds.isEmpty()) {
+                    if (onDone != null) onDone.run();
+                    return;
+                }
+                favoriteDao.deleteByOutfitIds(outfitIds);
+                if (onDone != null) onDone.run();
+            } catch (Exception e) {
+                if (onError != null) onError.accept("取消收藏失败: " + e.getMessage());
+            }
+        });
     }
 }

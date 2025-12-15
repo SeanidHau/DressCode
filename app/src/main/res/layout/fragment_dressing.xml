@@ -4,88 +4,249 @@
     android:id="@+id/rootDressing"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="@color/dc_background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="24dp">
 
-        <!-- 用户照片区域 -->
+        <!-- 顶部标题（克制） -->
         <TextView
-            android:id="@+id/tvUserPhotoTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="我的照片"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/ivUserPhoto"
+            android:id="@+id/tvPageTitle"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginTop="8dp"
-            android:scaleType="centerCrop"
-            android:background="@android:color/darker_gray"
-            android:contentDescription="User Photo" />
+            android:layout_height="wrap_content"
+            android:text="智能换装"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/dc_text_primary"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="12dp" />
 
+        <!-- 照片区域：一个“融入背景”的分区 -->
         <LinearLayout
+            android:id="@+id/sectionPhoto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:background="@color/dc_surface"
+            android:padding="14dp">
 
-            <Button
-                android:id="@+id/btnPickPhoto"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="从相册选择" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <View
-                android:layout_width="8dp"
-                android:layout_height="0dp" />
+                <TextView
+                    android:id="@+id/tvUserPhotoTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="我的照片"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/dc_text_primary" />
 
-            <Button
-                android:id="@+id/btnTakePhoto"
-                android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/tvPhotoHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="用于生成换装效果"
+                    android:textSize="12sp"
+                    android:textColor="@color/dc_text_secondary" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivUserPhoto"
+                android:background="@drawable/bg_photo_rounded"
+                android:clipToOutline="true"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:layout_marginTop="10dp"
+                android:contentDescription="User Photo"
+                android:scaleType="centerCrop"
+                android:foreground="?attr/selectableItemBackground" />
+
+            <!-- 轻提示：照片未选择时可显示（你逻辑里控制） -->
+            <TextView
+                android:id="@+id/tvPhotoEmptyTip"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="拍照" />
+                android:layout_marginTop="8dp"
+                android:text="建议选择正面、光线均匀的照片"
+                android:textSize="12sp"
+                android:textColor="@color/dc_text_secondary" />
+
+            <!-- 操作按钮：次级、并列 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPickPhoto"
+                    style="@style/Widget.DressCode.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="从相册选择" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="0dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTakePhoto"
+                    style="@style/Widget.DressCode.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="拍照" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- 收藏穿搭列表 -->
-        <TextView
-            android:id="@+id/tvFavoriteTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="我的收藏穿搭"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvFavorites"
+        <!-- 分隔 -->
+        <View
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_marginTop="8dp" />
+            android:layout_height="14dp" />
 
-        <!-- 换装按钮 -->
-        <Button
+        <!-- 收藏穿搭 -->
+        <LinearLayout
+            android:id="@+id/sectionFavorites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/dc_surface"
+            android:padding="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvFavoriteTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="我的收藏穿搭"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/dc_text_primary" />
+
+                <TextView
+                    android:id="@+id/btnManageFavorites"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="管理"
+                    android:textSize="14sp"
+                    android:textColor="@color/dc_text_secondary"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvFavoriteSub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="选择一套收藏，用于生成换装参考"
+                android:textSize="12sp"
+                android:textColor="@color/dc_text_secondary" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFavorites"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="8dp" />
+
+            <LinearLayout
+                android:id="@+id/manageBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvManageCount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="已选 0"
+                    android:textColor="@color/dc_text_secondary"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnUnfavorite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="取消收藏"
+                    android:enabled="false" />
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="0dp" />
+
+                <Button
+                    android:id="@+id/btnDoneManage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="完成" />
+            </LinearLayout>
+
+            <!-- 空态（可选：你有收藏时隐藏） -->
+            <TextView
+                android:id="@+id/tvFavoritesEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="你还没有收藏穿搭，先去“发现”收藏几套吧。"
+                android:textSize="12sp"
+                android:textColor="@color/dc_text_secondary"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- 分隔 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <!-- 主 CTA + 状态栏（不 toast） -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDressing"
+            style="@style/Widget.DressCode.Button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_height="48dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:text="一键换装" />
 
-        <!-- 简单 loading 文本（也可用 ProgressBar） -->
+        <!-- 内联状态：loading / error 都可以复用这条 -->
         <TextView
             android:id="@+id/tvLoading"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="正在生成换装效果..."
-            android:textColor="@android:color/holo_blue_dark"
+            android:layout_marginTop="10dp"
+            android:text="正在生成换装效果…"
+            android:textSize="12sp"
+            android:textColor="@color/dc_text_secondary"
             android:visibility="gone" />
 
     </LinearLayout>

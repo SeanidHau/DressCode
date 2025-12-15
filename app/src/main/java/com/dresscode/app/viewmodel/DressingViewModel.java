@@ -110,4 +110,19 @@ public class DressingViewModel extends AndroidViewModel {
         currentCameraPhotoUri = uri;
         return uri;
     }
+
+    public void unfavoriteOutfits(List<Integer> outfitIds) {
+        repository.unfavoriteOutfits(
+                outfitIds,
+                () -> {
+                    // 删除后重新加载收藏列表，让页面立刻更新
+                    loadFavorites();
+                },
+                msg -> errorMessage.postValue(msg)
+        );
+    }
+
+    public void consumeDressingResult() {
+        dressingResult.postValue(null);
+    }
 }

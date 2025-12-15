@@ -158,7 +158,7 @@ public class FeedFragment extends Fragment {
         SearchHistoryDao searchHistoryDao = db.searchHistoryDao();
 
         // 2. ⚠️ 先塞假数据（只在空表时塞一次）
-        FakeOutfitData.seedIfEmpty(db);
+        // FakeOutfitData.seedIfEmpty(db);
 
         // 3. Retrofit（如果暂时不用后端，这段就先留着，不影响）
         Retrofit retrofit = new Retrofit.Builder()

@@ -8,12 +8,15 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.dresscode.app.R;
+import com.dresscode.app.data.remote.ApiClient;
 import com.dresscode.app.ui.dressing.DressingFragment;
 import com.dresscode.app.ui.feed.FeedFragment;
 import com.dresscode.app.ui.settings.SettingsFragment;
 import com.dresscode.app.ui.weather.WeatherFragment;
 import com.dresscode.app.utils.PreferenceUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.dresscode.app.data.local.AppDatabase;
+import com.dresscode.app.utils.OutfitDataSeeder;
 
 public class MainActivity extends AppCompatActivity
         implements WeatherFragment.Navigator {
@@ -36,6 +39,9 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        AppDatabase db = AppDatabase.getInstance(this);
+        OutfitDataSeeder.seedIfEmpty(this, db);
 
         bottomNav = findViewById(R.id.bottomNav);
 
@@ -65,6 +71,8 @@ public class MainActivity extends AppCompatActivity
             }
             return false;
         });
+
+        ApiClient.resetForDebug();
     }
 
     private void switchFragment(@NonNull Fragment fragment) {

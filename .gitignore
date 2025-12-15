@@ -13,3 +13,13 @@
 .externalNativeBuild
 .cxx
 local.properties
+.env
+server/uploads/
+server/outfits/
+server/*.jpg
+server/*.png
+app/src/main/assets/images/
+app/src/main/assets/outfits/
+app/src/main/assets/*.jpg
+app/src/main/assets/*.png
+tools/labeler/images/

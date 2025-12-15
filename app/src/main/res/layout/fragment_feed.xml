@@ -18,6 +18,8 @@
             android:background="@color/dc_background"
             android:elevation="0dp"
             app:title="发现穿搭"
+            android:textSize="22sp"
+            android:textStyle="bold"
             app:titleTextColor="@color/dc_text_primary"
             app:navigationIcon="@null" />
 
